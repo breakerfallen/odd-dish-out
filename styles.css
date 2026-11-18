@@ -219,7 +219,8 @@ input:focus-visible, textarea:focus-visible, button:focus-visible, .chip:focus-w
 }
 
 .chips { display: grid; gap: 8px; }
-.cat-chips { grid-template-columns: 1fr 1fr; }
+.cat-chips { grid-template-columns: repeat(2, minmax(0, 1fr)); }
+.chip-text b, .chip-text small { overflow-wrap: anywhere; }
 .tag-chips { display: flex; flex-wrap: wrap; }
 .chip {
   position: relative; display: flex; align-items: center; gap: 8px;
