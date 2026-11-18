@@ -1,0 +1,285 @@
+<!doctype html>
+<html lang="en">
+<head>
+  <meta charset="utf-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1, viewport-fit=cover">
+  <meta name="robots" content="noindex, nofollow, noarchive">
+  <meta name="referrer" content="no-referrer">
+  <meta name="theme-color" content="#FFF3DC" media="(prefers-color-scheme: light)">
+  <meta name="theme-color" content="#1D0F26" media="(prefers-color-scheme: dark)">
+  <title>Odd Dish Out</title>
+  <link rel="icon" href="data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 100 100'%3E%3Ctext y='.9em' font-size='90'%3E🍽️%3C/text%3E%3C/svg%3E">
+  <link rel="preconnect" href="https://fonts.googleapis.com">
+  <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+  <link href="https://fonts.googleapis.com/css2?family=Bagel+Fat+One&family=Fredoka:wght@400;500;600&display=swap" rel="stylesheet">
+  <link rel="stylesheet" href="styles.css">
+  <script src="config.js"></script>
+  <script src="lib/potluck.js"></script>
+  <script src="ideas.js"></script>
+  <script src="mock.js"></script>
+  <script src="app.js"></script>
+  <script defer src="https://cdn.jsdelivr.net/npm/canvas-confetti@1.9.4/dist/confetti.browser.min.js"></script>
+  <script defer src="https://cdn.jsdelivr.net/npm/alpinejs@3.17.5/dist/cdn.min.js"></script>
+</head>
+<body x-data="odo">
+
+  <!-- Loading -->
+  <div class="gate" x-show="status === 'loading'">
+    <div class="plate-spin" aria-hidden="true">🍽️</div>
+    <p>Setting the table…</p>
+  </div>
+
+  <!-- No key, or the wrong one -->
+  <div class="gate" x-show="status === 'locked'" x-cloak>
+    <div class="gate-emoji" aria-hidden="true">🔒</div>
+    <h1 class="gate-title">Odd Dish Out</h1>
+    <p>This dinner is invite-only.<br>Ask the hosts to text you the link.</p>
+  </div>
+
+  <!-- Could not reach the sheet -->
+  <div class="gate" x-show="status === 'error'" x-cloak>
+    <div class="gate-emoji" aria-hidden="true">🫠</div>
+    <h1 class="gate-title">Well, that's odd.</h1>
+    <p>We couldn't reach the sign-up sheet.</p>
+    <button class="btn" type="button" @click="retry()">Try again</button>
+  </div>
+
+  <div x-show="status === 'ready'" x-cloak>
+
+    <p class="demo-banner" x-show="demo">Demo mode: sign-ups are saved on this device only.</p>
+
+    <!-- 1. Hero -->
+    <header class="hero">
+      <span class="sticker s1" aria-hidden="true">🥟</span>
+      <span class="sticker s2" aria-hidden="true">🌶️</span>
+      <span class="sticker s3" aria-hidden="true">🦑</span>
+      <span class="sticker s4" aria-hidden="true">🍍</span>
+      <p class="kicker">Thanksgiving 2026 · Now holding auditions</p>
+      <h1 class="title" aria-label="Odd Dish Out">
+        <span class="line" aria-hidden="true">O<span class="odd">D</span>D</span>
+        <span class="line" aria-hidden="true">DISH</span>
+        <span class="line" aria-hidden="true">OUT</span>
+      </h1>
+      <p class="lede">Bring the dish that doesn't belong. It might earn a permanent seat at the table.</p>
+      <ul class="facts">
+        <li x-show="event.eventDate"><span aria-hidden="true">📅</span> <span x-text="event.eventDate"></span></li>
+        <li x-show="event.eventTime"><span aria-hidden="true">⏰</span> <span x-text="event.eventTime"></span></li>
+        <li x-show="event.address">
+          <span aria-hidden="true">📍</span>
+          <a :href="mapLink" target="_blank" rel="noopener noreferrer" x-text="event.address"></a>
+        </li>
+      </ul>
+      <p class="host-note" x-show="event.hostNote" x-text="event.hostNote"></p>
+    </header>
+
+    <main>
+
+      <!-- 2. The idea -->
+      <section class="card">
+        <h2>The idea</h2>
+        <p>This year, the classics take a seat and the weird stuff gets a turn.</p>
+        <ul class="idea-list">
+          <li><span class="bullet" aria-hidden="true">🎭</span><div><strong>It's an audition.</strong> Fresh dishes are trying out for a spot in the permanent Thanksgiving rotation.</div></li>
+          <li><span class="bullet" aria-hidden="true">🧪</span><div><strong>It's an excuse.</strong> Make the strange thing you've been eyeing. Now you have a reason.</div></li>
+          <li><span class="bullet" aria-hidden="true">💬</span><div><strong>It's something to talk about.</strong> A way to play with your food, and with each other.</div></li>
+        </ul>
+        <p class="rules"><strong>The rules:</strong> there aren't any. Bring whatever you want. All we ask is a glance at the tally below, so we don't end up with eleven breads.</p>
+      </section>
+
+      <!-- 3. What the hosts cover -->
+      <section class="covered">
+        <h2>Already handled</h2>
+        <div class="bird">
+          <span class="bird-emoji" aria-hidden="true">🦃</span>
+          <div>
+            <h3>A poultry</h3>
+            <p x-text="poultryLine"></p>
+          </div>
+        </div>
+        <div class="bar">
+          <p class="bar-open">Open bar</p>
+          <h3>Home of<br>Wayward Bottles</h3>
+          <p>A mishmash of liquors people have given us, plus whatever survived decades of cocktails. All orphans welcome. All orphans poured.</p>
+          <span class="bottles" aria-hidden="true">🍾🥃🍶🧉</span>
+        </div>
+      </section>
+
+      <!-- 4. The table so far -->
+      <section class="card" id="tally">
+        <div class="section-head">
+          <h2>The table so far</h2>
+          <span class="count-pill" x-text="summary"></span>
+        </div>
+        <div class="tally">
+          <template x-for="c in cats" :key="c.key">
+            <div class="tile" :class="'c-' + c.key">
+              <span class="tile-emoji" aria-hidden="true" x-text="c.emoji"></span>
+              <span class="tile-label" x-text="c.label"></span>
+              <span class="tile-count" x-text="count(c.key)"></span>
+            </div>
+          </template>
+        </div>
+        <div class="nudge" role="status">
+          <span class="nudge-emoji" aria-hidden="true">👀</span>
+          <p x-text="nudge"></p>
+        </div>
+      </section>
+
+      <!-- 5. Sign up -->
+      <section class="card signup" id="signup">
+        <h2 x-text="form.id ? 'Change your dish' : 'Sign up a dish'"></h2>
+        <p class="sub" x-show="!form.id">Bringing more than one? Sign up again for each.</p>
+        <form @submit.prevent="submit()" novalidate>
+          <label class="field">
+            <span>Your name</span>
+            <input type="text" x-model="form.name" maxlength="40" autocomplete="given-name" placeholder="Aunt Somebody">
+          </label>
+          <div class="field">
+            <label x-show="!form.mystery">
+              <span class="field-label">What are you bringing?</span>
+              <input type="text" x-model="form.dish" maxlength="80" autocomplete="off" placeholder="A working title is fine">
+            </label>
+            <label class="chip small surprise" :class="form.mystery ? 'on' : ''">
+              <input type="checkbox" x-model="form.mystery">
+              <span aria-hidden="true">🤫</span>
+              <span x-text="form.mystery ? 'It\'s a surprise (or undecided). Tap to name it.' : 'Undecided, or keeping it a surprise'"></span>
+            </label>
+            <p class="hint" x-show="form.mystery">Just pick a category below so we know roughly what's coming. You can come back and reveal it any time.</p>
+          </div>
+          <p class="aside" x-show="dupNote" x-text="dupNote"></p>
+
+          <fieldset class="field">
+            <legend>Closest category</legend>
+            <div class="chips cat-chips">
+              <template x-for="c in cats" :key="c.key">
+                <label class="chip" :class="['c-' + c.key, form.category === c.key ? 'on' : '']">
+                  <input type="radio" name="category" :value="c.key" x-model="form.category">
+                  <span class="chip-emoji" aria-hidden="true" x-text="c.emoji"></span>
+                  <span class="chip-text"><b x-text="c.label"></b><small x-text="c.hint"></small></span>
+                </label>
+              </template>
+            </div>
+          </fieldset>
+          <p class="aside" x-show="catNote" x-text="catNote"></p>
+
+          <label class="field servings">
+            <span>Feeds about how many? <em>(optional)</em></span>
+            <input type="number" x-model="form.servings" min="1" max="99" inputmode="numeric" placeholder="8">
+          </label>
+
+          <fieldset class="field">
+            <legend>Good to know <em>(optional)</em></legend>
+            <div class="chips tag-chips">
+              <template x-for="t in tagList" :key="t">
+                <label class="chip small" :class="form.tags.includes(t) ? 'on' : ''">
+                  <input type="checkbox" :checked="form.tags.includes(t)" @change="toggleTag(t)">
+                  <span x-text="t"></span>
+                </label>
+              </template>
+            </div>
+          </fieldset>
+
+          <label class="field">
+            <span>Anything else? <em>(optional)</em></span>
+            <textarea x-model="form.note" maxlength="200" rows="2" placeholder="Needs oven space, the story behind it, a warning…"></textarea>
+          </label>
+
+          <!-- spam trap: hidden from people, tempting to bots -->
+          <label class="hp" aria-hidden="true">Website <input type="text" x-model="form.website" tabindex="-1" autocomplete="off"></label>
+
+          <p class="form-error" role="alert" x-show="formError" x-text="formError"></p>
+
+          <button class="btn big" type="submit" :disabled="saving">
+            <span x-text="saving ? 'Saving…' : (form.id ? 'Save changes' : 'Put it on the menu')"></span>
+          </button>
+          <button class="btn ghost" type="button" x-show="form.id" @click="cancelEdit()">Never mind</button>
+        </form>
+      </section>
+
+      <!-- 6. Spinner -->
+      <section class="card spinner">
+        <h2>Stuck? Spin.</h2>
+        <p class="sub">No pressure. Just a nudge toward the strange.</p>
+        <div class="idea-box" :class="spinning ? 'spinning' : ''" aria-live="polite">
+          <p x-text="idea || 'Your odd idea appears here.'" :class="idea ? '' : 'placeholder'"></p>
+        </div>
+        <button class="btn alt" type="button" @click="spin()" :disabled="spinning">
+          <span aria-hidden="true">🎰</span> <span x-text="idea ? 'Spin again' : 'Give me an idea'"></span>
+        </button>
+      </section>
+
+      <!-- 7 + 8. Lineup and rotation vote -->
+      <section class="card" id="lineup">
+        <div class="section-head">
+          <h2 x-text="votingOpen ? 'The rotation vote' : 'The lineup'"></h2>
+        </div>
+        <p class="vote-intro" x-show="votingOpen">Tap <b>Keep it</b> on every dish that deserves a permanent spot. Vote for as many as you like. Change your mind freely.</p>
+
+        <p class="empty" x-show="!dishes.length">No auditions yet. The stage is yours.</p>
+
+        <template x-for="g in groups" :key="g.key">
+          <div class="group">
+            <h3 class="group-head" x-show="g.label"><span aria-hidden="true" x-text="g.emoji"></span> <span x-text="g.label"></span></h3>
+            <template x-for="(d, i) in g.dishes" :key="d.id">
+              <article class="dish" :id="'dish-' + d.id" :class="['c-' + cat(d.category).key, isMine(d.id) ? 'mine' : '']">
+                <div class="dish-main">
+                  <h4>
+                    <span class="rank" x-show="votingOpen && (votes[d.id] || 0) > 0" x-text="'#' + (i + 1)"></span>
+                    <span :class="d.dish ? '' : 'mystery'" x-text="title(d)"></span>
+                  </h4>
+                  <p class="by">
+                    <span x-show="votingOpen" aria-hidden="true" x-text="cat(d.category).emoji"></span>
+                    by <span x-text="d.name"></span><span x-show="d.servings > 0" x-text="' · feeds ~' + d.servings"></span><span class="you" x-show="isMine(d.id)">you</span>
+                  </p>
+                  <p class="tags" x-show="d.tags && d.tags.length">
+                    <template x-for="t in (d.tags || [])" :key="t"><span class="tag" x-text="t"></span></template>
+                  </p>
+                  <p class="note" x-show="d.note" x-text="d.note"></p>
+                </div>
+
+                <button class="vote" type="button" x-show="votingOpen" :class="voted(d.id) ? 'on' : ''"
+                        :aria-pressed="voted(d.id) ? 'true' : 'false'" @click="vote(d)">
+                  <span class="vote-emoji" aria-hidden="true">🏆</span>
+                  <span class="vote-label" x-text="voted(d.id) ? 'Kept!' : 'Keep it'"></span>
+                  <span class="vote-count" x-text="votes[d.id] || 0"></span>
+                </button>
+
+                <div class="dish-actions" x-show="isMine(d.id)">
+                  <template x-if="confirmRemove !== d.id">
+                    <div class="row">
+                      <button class="link" type="button" @click="edit(d)">Edit</button>
+                      <button class="link" type="button" @click="confirmRemove = d.id">Remove</button>
+                    </div>
+                  </template>
+                  <template x-if="confirmRemove === d.id">
+                    <div class="row">
+                      <span>Pull it from the menu?</span>
+                      <button class="link danger" type="button" :disabled="saving" @click="remove(d)">Yes, remove</button>
+                      <button class="link" type="button" @click="confirmRemove = null">Keep</button>
+                    </div>
+                  </template>
+                </div>
+              </article>
+            </template>
+          </div>
+        </template>
+
+        <p class="teaser" x-show="!votingOpen"><span aria-hidden="true">🏆</span> On the day, voting opens right here: everyone picks the dishes that earn a permanent spot in the rotation.</p>
+      </section>
+
+    </main>
+
+    <footer>
+      <p>Made for the family, with questionable judgment and love.</p>
+      <p class="offline" x-show="offline">Having trouble reaching the sheet. The list may be a little stale.</p>
+    </footer>
+
+    <div class="cta" x-show="!formInView && !votingOpen" x-transition.opacity>
+      <button class="btn big" type="button" @click="scrollTo('signup')">＋ Add my dish</button>
+    </div>
+  </div>
+
+  <div class="toast" role="status" x-show="toast" x-transition x-text="toast" x-cloak></div>
+
+</body>
+</html>
