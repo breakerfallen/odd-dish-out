@@ -42,6 +42,7 @@ function setup() {
     settings.getRange('A10').setValue('shareLink');
     settings.getRange('B10').setFormula('=B8&"#k="&B2');
     settings.getRange('C10').setValue('Text this link to the family. It updates if you change the key.');
+    settings.getRange('A11:C11').setNumberFormat('@').setValues([['guests', '', 'Guest first names, separated by commas. Each shows as a blank in the lineup until they sign up.']]);
     settings.getRange('A1:C1').setFontWeight('bold');
     settings.setFrozenRows(1);
     settings.setColumnWidth(1, 120);
@@ -267,7 +268,8 @@ function state_(snap, voterId) {
       eventTime: String(s.eventTime || ''),
       address: String(s.address || ''),
       poultry: String(s.poultry || ''),
-      hostNote: String(s.hostNote || '')
+      hostNote: String(s.hostNote || ''),
+      guests: String(s.guests || '').split(/[,;\n]/).map(function (g) { return g.trim().slice(0, 40); }).filter(Boolean).slice(0, 80)
     },
     votingOpen: !!s.votingOpen,
     dishes: snap.dishes.map(function (d) {

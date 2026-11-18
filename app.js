@@ -312,6 +312,30 @@
           }).filter(function (g) { return g.dishes.length; });
         },
 
+        // Guests from the Sheet who have not signed up yet. A guest counts as
+        // signed up when a dish's name matches theirs, or starts with it ("Jenn S.").
+        get pending() {
+          var raw = this.event.guests || [];
+          var guests = Array.isArray(raw) ? raw : String(raw).split(/[,;\n]/);
+          var signed = this.dishes.map(function (d) { return String(d.name).trim().toLowerCase(); });
+          var seen = {};
+          return guests.map(function (g) { return String(g).trim(); }).filter(function (g) {
+            var k = g.toLowerCase();
+            if (!k || seen[k]) return false;
+            seen[k] = true;
+            return !signed.some(function (n) {
+              return n === k || n.indexOf(k + ' ') === 0 || n.split(/\s+/)[0] === k.split(/\s+/)[0];
+            });
+          });
+        },
+
+        claim: function (guest) {
+          if (this.form.id) this.cancelEdit();
+          this.form.name = guest;
+          this.formError = '';
+          this.scrollTo('signup');
+        },
+
         cat: function (key) {
           return CATS.find(function (c) { return c.key === key; }) || CATS[CATS.length - 1];
         },

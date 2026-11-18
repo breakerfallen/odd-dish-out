@@ -42,6 +42,7 @@ In the **Settings** tab, column B:
 | address | your address (shows as a maps link; leave empty to hide) |
 | poultry | the bird, once you know. `TBD` shows "to be determined" |
 | hostNote | optional extra line (parking, dress code, anything) |
+| guests | first names separated by commas, e.g. `Alex, Sam, Jo`. Each shows as a blank in the lineup until that person signs up |
 
 Changes show up on the page within about 30 seconds.
 

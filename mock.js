@@ -19,6 +19,7 @@
         address: '',
         poultry: 'TBD',
         hostNote: '',
+        guests: 'Alex, Sam, Jo, Robin',
         votingOpen: false
       },
       dishes: [],

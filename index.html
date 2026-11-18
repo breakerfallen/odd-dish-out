@@ -215,7 +215,7 @@
         </div>
         <p class="vote-intro" x-show="votingOpen">Tap <b>Keep it</b> on every dish that deserves a permanent spot. Vote for as many as you like. Change your mind freely.</p>
 
-        <p class="empty" x-show="!dishes.length">No auditions yet. The stage is yours.</p>
+        <p class="empty" x-show="!dishes.length" x-text="pending.length ? 'No auditions yet. Find your name and fill in the blank.' : 'No auditions yet. The stage is yours.'"></p>
 
         <template x-for="g in groups" :key="g.key">
           <div class="group">
@@ -263,6 +263,17 @@
             </template>
           </div>
         </template>
+
+        <div class="group" x-show="pending.length && !votingOpen">
+          <h3 class="group-head"><span aria-hidden="true">🤔</span> Still deciding</h3>
+          <template x-for="g in pending" :key="g">
+            <button type="button" class="blank" @click="claim(g)">
+              <span class="blank-name" x-text="g"></span>
+              <span class="blank-line" aria-hidden="true"></span>
+              <span class="blank-cta">That's me</span>
+            </button>
+          </template>
+        </div>
 
         <p class="teaser" x-show="!votingOpen"><span aria-hidden="true">🏆</span> On the day, voting opens right here: everyone picks the dishes that earn a permanent spot in the rotation.</p>
       </section>
