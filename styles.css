@@ -170,7 +170,6 @@ main { display: grid; grid-template-columns: minmax(0, 1fr); gap: 22px; }
 .c-starch { --c: var(--mustard); }
 .c-bread { --c: #F2A65A; }
 .c-appetizer { --c: #5FD4C4; }
-.tally .tile:last-of-type:nth-of-type(odd), .cat-chips .chip:last-of-type:nth-of-type(odd) { grid-column: 1 / -1; }
 .c-carb { --c: var(--mustard); }
 .c-sweet { --c: var(--pink); }
 .c-sip { --c: var(--sky); }
