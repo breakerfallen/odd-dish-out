@@ -38,10 +38,11 @@
     });
     return {
       ok: true,
+      version: 2,
       event: s.settings,
       votingOpen: !!s.settings.votingOpen,
       dishes: s.dishes.map(function (d) {
-        return { id: d.id, name: d.name, dish: d.dish, servings: d.servings || 0, category: d.category, tags: d.tags, note: d.note, createdAt: d.createdAt };
+        return { id: d.id, name: d.name, dish: d.dish, servings: d.servings || 0, category: d.category, tags: d.tags, note: d.note, createdAt: d.createdAt, kitchen: d.kitchen || null };
       }),
       votes: counts,
       myVotes: mine
@@ -55,7 +56,8 @@
       servings: Math.max(0, Math.min(99, parseInt(p.servings, 10) || 0)),
       category: CATS.indexOf(p.category) >= 0 ? p.category : 'wild',
       tags: (p.tags || []).slice(0, 6),
-      note: String(p.note || '').trim().slice(0, 200)
+      note: String(p.note || '').trim().slice(0, 200),
+      kitchen: p.kitchen && p.kitchen.needs ? p.kitchen : null
     };
   }
 

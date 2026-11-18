@@ -123,6 +123,27 @@
           <span class="nudge-emoji" aria-hidden="true">👀</span>
           <p x-text="nudge"></p>
         </div>
+
+        <div class="kitchen" x-show="hasKitchenPlan">
+          <h3>Kitchen plan</h3>
+          <div class="k-row" x-show="ovenDishes.length">
+            <p class="k-head"><span aria-hidden="true">🔥</span> Oven</p>
+            <ul>
+              <template x-for="d in ovenDishes" :key="d.id">
+                <li><b x-text="tempLabel(d.kitchen.temp)"></b> <span x-text="'for ' + minsLabel(d.kitchen.mins) + ': ' + title(d) + ' (' + d.name + ')'"></span></li>
+              </template>
+            </ul>
+            <p class="k-warn" x-show="ovenVerdict" x-text="ovenVerdict"></p>
+          </div>
+          <div class="k-row" x-show="byNeed('hot').length">
+            <p class="k-head"><span aria-hidden="true">🍲</span> Staying hot</p>
+            <p x-text="namesFor('hot')"></p>
+          </div>
+          <div class="k-row" x-show="byNeed('cold').length">
+            <p class="k-head"><span aria-hidden="true">🧊</span> Fridge</p>
+            <p x-text="namesFor('cold')"></p>
+          </div>
+        </div>
       </section>
 
       <!-- 5. Sign up -->
@@ -169,6 +190,38 @@
             </div>
           </fieldset>
           <p class="aside" x-show="catNote" x-text="catNote"></p>
+
+          <fieldset class="field" x-show="kitchenOn">
+            <legend>When you get here, it needs…</legend>
+            <div class="chips cat-chips">
+              <template x-for="n in needList" :key="n.key">
+                <label class="chip need" :class="form.needs === n.key ? 'on' : ''">
+                  <input type="radio" name="needs" :value="n.key" x-model="form.needs">
+                  <span class="chip-emoji" aria-hidden="true" x-text="n.emoji"></span>
+                  <span class="chip-text"><b x-text="n.label"></b><small x-text="n.hint"></small></span>
+                </label>
+              </template>
+            </div>
+            <div class="oven-box" x-show="form.needs === 'oven'">
+              <span class="field-label" id="temp-label">How hot?</span>
+              <div class="chips pick-chips" role="group" aria-labelledby="temp-label">
+                <template x-for="t in temps" :key="t">
+                  <button type="button" class="chip small pick" :class="form.temp === t ? 'on' : ''"
+                          :aria-pressed="form.temp === t ? 'true' : 'false'" @click="form.temp = t" x-text="tempLabel(t)"></button>
+                </template>
+              </div>
+              <span class="field-label" id="time-label">For how long?</span>
+              <div class="chips pick-chips" role="group" aria-labelledby="time-label">
+                <template x-for="m in times" :key="m">
+                  <button type="button" class="chip small pick" :class="form.mins === m ? 'on' : ''"
+                          :aria-pressed="form.mins === m ? 'true' : 'false'" @click="form.mins = m" x-text="minsLabel(m)"></button>
+                </template>
+              </div>
+            </div>
+            <p class="aside clash" x-show="ovenNote" x-text="ovenNote"></p>
+            <p class="hint" x-show="needHint" x-text="needHint"></p>
+            <p class="hint safety"><span aria-hidden="true">🌡️</span> Why we ask: hot food stays hot, cold food stays cold, and nothing perishable sits out more than 2 hours.</p>
+          </fieldset>
 
           <button class="more" type="button" x-show="!showDetails" @click="showDetails = true">＋ Add details <em>(optional)</em></button>
 
@@ -239,6 +292,7 @@
                   <p class="tags" x-show="d.tags && d.tags.length">
                     <template x-for="t in (d.tags || [])" :key="t"><span class="tag" x-text="t"></span></template>
                   </p>
+                  <p class="kitchen-tag" x-show="kitchenLabel(d)" x-text="kitchenLabel(d)"></p>
                   <p class="note" x-show="d.note" x-text="d.note"></p>
                 </div>
 

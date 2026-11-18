@@ -12,7 +12,8 @@
 var SITE_URL = 'https://breakerfallen.github.io/odd-dish-out/';
 
 var CATS = ['protein', 'green', 'carb', 'sweet', 'sip', 'wild'];
-var DISH_HEADERS = ['id', 'name', 'dish', 'category', 'servings', 'tags', 'note', 'createdAt', 'tokenHash'];
+var DISH_HEADERS = ['id', 'name', 'dish', 'category', 'servings', 'tags', 'note', 'createdAt', 'tokenHash', 'kitchen'];
+var KITCHEN_COL = 10;
 var VOTE_HEADERS = ['voterId', 'dishId', 'at'];
 var MAX_DISHES = 150;
 var MAX_VOTES = 5000;
@@ -146,6 +147,8 @@ function write_(action, req, snap, voterId) {
 
   if (!idOk_(req.id) || !req.token) return 'missing_fields';
   sh = ss.getSheetByName('Dishes');
+  // sheets made before the kitchen question existed lack this header
+  if (!sh.getRange(1, KITCHEN_COL).getValue()) sh.getRange(1, KITCHEN_COL).setValue('kitchen').setFontWeight('bold');
   var hash = sha256_(String(req.token));
   var existing = null;
   snap.dishes.forEach(function (d) { if (d.id === req.id) existing = d; });
@@ -173,7 +176,7 @@ function write_(action, req, snap, voterId) {
   if (action === 'addDish') {
     if (existing) return 'not_yours';
     if (snap.dishes.length >= MAX_DISHES) return 'full';
-    row = [req.id].concat(fields, [new Date().toISOString(), hash]);
+    row = [req.id].concat(fields, [new Date().toISOString(), hash, kitchenIn_(req.kitchen)]);
     sh.getRange(sh.getLastRow() + 1, 1, 1, DISH_HEADERS.length).setValues([row]);
     return '';
   }
@@ -182,6 +185,7 @@ function write_(action, req, snap, voterId) {
   if (!existing) return 'not_found';
   if (existing.tokenHash !== hash) return 'not_yours';
   sh.getRange(existing.row, 2, 1, fields.length).setValues([fields]);
+  sh.getRange(existing.row, KITCHEN_COL).setValue(kitchenIn_(req.kitchen));
   return '';
 }
 
@@ -228,7 +232,8 @@ function snapshot_(fresh) {
       tags: String(r[5] || '').split(',').map(function (t) { return t.trim(); }).filter(Boolean),
       note: shown_(r[6]),
       createdAt: String(r[7] || ''),
-      tokenHash: String(r[8] || '')
+      tokenHash: String(r[8] || ''),
+      kitchen: kitchenOut_(r[9])
     });
   });
 
@@ -263,6 +268,7 @@ function state_(snap, voterId) {
   var s = snap.settings;
   return {
     ok: true,
+    version: 2,
     event: {
       eventDate: String(s.eventDate || ''),
       eventTime: String(s.eventTime || ''),
@@ -275,7 +281,7 @@ function state_(snap, voterId) {
     dishes: snap.dishes.map(function (d) {
       return {
         id: d.id, name: d.name, dish: d.dish, category: d.category,
-        servings: d.servings, tags: d.tags, note: d.note, createdAt: d.createdAt
+        servings: d.servings, tags: d.tags, note: d.note, createdAt: d.createdAt, kitchen: d.kitchen
       };
     }),
     votes: counts,
@@ -301,6 +307,29 @@ function text_(value, max) {
 function shown_(value) {
   var s = String(value == null ? '' : value).trim();
   return /^'[=+\-@]/.test(s) ? s.slice(1) : s;
+}
+
+/**
+ * What a dish needs from the kitchen on arrival, stored in one cell as
+ * `none`, `cold`, `hot`, or `oven|350|60` (degrees F, minutes; 0 degrees = just warming).
+ */
+function kitchenIn_(k) {
+  if (!k || typeof k !== 'object') return '';
+  var needs = String(k.needs || '');
+  if (['none', 'cold', 'hot'].indexOf(needs) >= 0) return needs;
+  if (needs !== 'oven') return '';
+  var temp = parseInt(k.temp, 10) || 0;
+  var mins = parseInt(k.mins, 10) || 0;
+  if (temp !== 0 && (temp < 150 || temp > 550)) temp = 0;
+  mins = Math.max(5, Math.min(480, mins));
+  return 'oven|' + temp + '|' + mins;
+}
+
+function kitchenOut_(cell) {
+  var parts = String(cell == null ? '' : cell).trim().toLowerCase().split('|');
+  if (['none', 'cold', 'hot'].indexOf(parts[0]) >= 0) return { needs: parts[0] };
+  if (parts[0] === 'oven') return { needs: 'oven', temp: parseInt(parts[1], 10) || 0, mins: parseInt(parts[2], 10) || 0 };
+  return null;
 }
 
 function sha256_(text) {
