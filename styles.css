@@ -328,6 +328,8 @@ input:focus-visible, textarea:focus-visible, button:focus-visible, .chip:focus-w
 .vote.never.on { background: var(--pink); }
 .vote.on .vote-emoji { filter: none; opacity: 1; }
 .vote-intro { margin-bottom: 14px; }
+/* on the day, the vote comes first */
+main.voting #lineup { order: -1; }
 
 .blank {
   display: flex; align-items: flex-end; gap: 10px; width: 100%;
