@@ -2,5 +2,5 @@
 // (see SETUP.md). While this is empty the page runs in demo mode: data stays
 // in this browser only, and the demo link is  index.html#k=test-key
 window.ODO_CONFIG = {
-  apiUrl: 'https://script.google.com/macros/s/AKfycbzpw8tDf_pebd2f7DytMIWCHCIukbnzxOGd3sshzCfG-Lr0oLM7rj6uedKKSkPZzGsd/exec'
+  apiUrl: 'https://script.google.com/macros/s/AKfycbxNgugXGUFSnIHxVtZJiTayep4VhgSZj9YBeAc3OVhtMrO7AthHRRghBnLlW7EBel83/exec'
 };
