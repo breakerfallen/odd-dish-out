@@ -13,12 +13,12 @@
   <link rel="preconnect" href="https://fonts.googleapis.com">
   <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
   <link href="https://fonts.googleapis.com/css2?family=Bagel+Fat+One&family=Fredoka:wght@400;500;600&display=swap" rel="stylesheet">
-  <link rel="stylesheet" href="styles.css?v=16">
-  <script src="config.js?v=16"></script>
-  <script src="lib/potluck.js?v=16"></script>
-  <script src="ideas.js?v=16"></script>
-  <script src="mock.js?v=16"></script>
-  <script src="app.js?v=16"></script>
+  <link rel="stylesheet" href="styles.css?v=17">
+  <script src="config.js?v=17"></script>
+  <script src="lib/potluck.js?v=17"></script>
+  <script src="ideas.js?v=17"></script>
+  <script src="mock.js?v=17"></script>
+  <script src="app.js?v=17"></script>
   <script defer src="https://cdn.jsdelivr.net/npm/canvas-confetti@1.9.4/dist/confetti.browser.min.js"></script>
   <script defer src="https://cdn.jsdelivr.net/npm/alpinejs@3.17.5/dist/cdn.min.js"></script>
 </head>
@@ -127,7 +127,7 @@
             <p class="k-warn" x-show="ovenVerdict" x-text="ovenVerdict"></p>
           </div>
           <div class="k-row" x-show="byNeed('range').length">
-            <p class="k-head"><span aria-hidden="true">🍳</span> Range</p>
+            <p class="k-head"><span aria-hidden="true">🍳</span> Cooktop</p>
             <ul>
               <template x-for="d in byNeed('range')" :key="d.id">
                 <li><b x-text="minsLabel(d.kitchen.mins)"></b> <span x-text="': ' + title(d) + ' (' + d.name + ')'"></span></li>
@@ -193,24 +193,29 @@
             <div class="chips cat-chips">
               <template x-for="n in needList" :key="n.key">
                 <label class="chip need" :class="form.needs === n.key ? 'on' : ''">
-                  <input type="radio" name="needs" :value="n.key" x-model="form.needs">
+                  <input type="radio" name="needs" :value="n.key" x-model="form.needs" @change="needPicked()">
                   <span class="chip-emoji" aria-hidden="true" x-text="n.emoji"></span>
                   <span class="chip-text"><b x-text="n.label"></b><small x-text="n.hint"></small></span>
                 </label>
               </template>
             </div>
-            <div class="oven-box" x-show="form.needs === 'oven'">
-              <span class="field-label" id="temp-label" x-text="rangeOn ? 'Stovetop, or how hot an oven?' : 'How hot?'"></span>
-              <div class="chips pick-chips" role="group" aria-labelledby="temp-label">
-                <template x-for="t in temps" :key="t">
-                  <button type="button" class="chip small pick" :class="form.temp === t ? 'on' : ''"
-                          :aria-pressed="form.temp === t ? 'true' : 'false'" @click="form.temp = t" x-text="tempLabel(t)"></button>
-                </template>
+            <div class="oven-box" x-show="form.needs === 'oven' || form.needs === 'range'">
+              <div x-show="form.needs === 'oven'">
+                <p class="temp-line">
+                  <span>Oven temperature: <b x-text="tempLabel(form.temp === null ? 350 : form.temp)"></b></span>
+                  <button type="button" class="link" x-show="!showTemps" @click="showTemps = true">Different temperature?</button>
+                </p>
+                <div class="chips pick-chips temp-chips" role="group" aria-label="Oven temperature" x-show="showTemps">
+                  <template x-for="t in temps" :key="t">
+                    <button type="button" class="chip small pick" :class="form.temp === t ? 'on' : ''"
+                            :aria-pressed="form.temp === t ? 'true' : 'false'" @click="form.temp = t" x-text="t ? t + '°' : 'Just warming'"></button>
+                  </template>
+                </div>
               </div>
               <span class="field-label" id="time-label">For how long?</span>
               <div class="chips pick-chips" role="group" aria-labelledby="time-label">
                 <template x-for="m in times" :key="m">
-                  <button type="button" class="chip small pick" :class="form.mins === m ? 'on' : ''"
+                  <button type="button" class="chip small pick time" :class="form.mins === m ? 'on' : ''"
                           :aria-pressed="form.mins === m ? 'true' : 'false'" @click="form.mins = m" x-text="minsLabel(m)"></button>
                 </template>
               </div>
@@ -340,7 +345,7 @@
           <li><b>The danger zone is 40°F to 140°F.</b> That's where bacteria grow fastest.</li>
           <li><b>Hot food stays hot:</b> 140°F or above. Wrap it well in an insulated carrier for the trip. Once you're here, we have a catering hot plate that a Pyrex dish can sit on.</li>
           <li><b>Cold food stays cold:</b> 40°F or below. A cooler with ice packs does it.</li>
-          <li><b>Reheating here?</b> You need to book oven or range space when you sign up, so we can plan around the other dishes. Take it to 165°F. Soups, sauces and gravies to a boil.</li>
+          <li><b>Reheating here?</b> You need to book oven or cooktop space when you sign up, so we can plan around the other dishes. Take it to 165°F. Soups, sauces and gravies to a boil.</li>
           <li><b>Two-hour rule:</b> nothing perishable sits out longer than 2 hours.</li>
         </ul>
         <p>More: <a href="https://www.lsuagcenter.com/profiles/aiverson/articles/page1520440253691" target="_blank" rel="noopener noreferrer">Potluck Safety, from the LSU AgCenter</a></p>

@@ -188,6 +188,9 @@ main { display: grid; grid-template-columns: minmax(0, 1fr); gap: 22px; }
 .chip.need { --c: var(--sky); }
 .oven-box { margin-top: 14px; padding: 12px; min-width: 0; border: 2.5px dashed var(--line); border-radius: 14px; }
 .oven-box .field-label + .chips { margin-bottom: 14px; }
+.temp-line { display: flex; flex-wrap: wrap; align-items: center; justify-content: space-between; gap: 0 12px; margin-bottom: 10px; }
+.temp-line b { font-family: var(--display); font-weight: 400; font-size: 1.3rem; }
+.temp-chips { margin-bottom: 14px; }
 .oven-box .chips:last-child { margin-bottom: 0; }
 .chips.pick-chips { grid-template-columns: repeat(3, 1fr); }
 .pick { min-width: 0; overflow-wrap: anywhere; font: inherit; font-size: 0.95rem; font-weight: 600; color: var(--ink); justify-content: center; text-align: center; min-height: 48px; padding: 6px 4px; --c: var(--persimmon); }

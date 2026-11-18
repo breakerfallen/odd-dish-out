@@ -312,7 +312,7 @@ function shown_(value) {
 /**
  * What a dish needs from the kitchen on arrival, stored in one cell as
  * `none`, `cold`, `hot`, `oven|350|60` (degrees F, minutes; 0 degrees = just warming),
- * or `range|30` (stovetop, minutes).
+ * or `range|30` (cooktop, minutes).
  */
 function kitchenIn_(k) {
   if (!k || typeof k !== 'object') return '';

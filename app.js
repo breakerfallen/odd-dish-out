@@ -20,14 +20,16 @@
     { key: 'none', label: 'Nothing', emoji: '🙂', hint: 'fine sitting out: bread, cookies' },
     { key: 'cold', label: 'Fridge space', emoji: '🧊', hint: 'served cold' },
     { key: 'hot', label: 'To stay hot', emoji: '🍲', hint: 'arrives hot, kept hot' },
-    { key: 'oven', label: 'Oven time', emoji: '🔥', hint: 'bake or reheat here' }
+    { key: 'oven', label: 'Oven', emoji: '🔥', hint: 'bake or reheat here' },
+    { key: 'range', label: 'Cooktop', emoji: '🍳', hint: 'a burner, for a while' }
   ];
   var TEMPS = [0, 300, 325, 350, 375, 400, 425, 450];
   var TIMES = [15, 30, 45, 60, 90, 120];
   var NEED_HINT = {
     cold: 'Bring it cold. It goes straight into the fridge or onto ice until dinner.',
     hot: 'Bring it hot and we will keep it hot. We have a catering hot plate that a Pyrex dish can sit on, so a Pyrex is ideal.',
-    oven: 'The bird has dibs on the oven, and burners are limited. If yours can be cooked at home and just warmed here, even better.'
+    oven: 'If yours can be cooked at home and just warmed here, even better.',
+    range: 'Burners are limited, so tell us how long you need one.'
   };
   var TAGS = ['vegetarian', 'vegan', 'gluten-free', 'dairy-free', 'contains nuts', 'spicy'];
 
@@ -108,6 +110,7 @@
         toast: '',
         formInView: false,
         showDetails: false,
+        showTemps: false,
         rangeOn: false,   // true once the Sheet script can also store stovetop bookings
         kitchenOn: false, // true once the Sheet script is new enough to save kitchen answers
         offline: false,
@@ -239,17 +242,21 @@
 
         // ---------- kitchen: oven clashes and food safety ----------
         // The oven choice doubles as the stovetop booking once the Sheet supports it.
+        // Cooktop bookings need the newer Sheet script, so the choice hides without it.
         get needList() {
           var range = this.rangeOn;
-          return NEEDS.map(function (n) {
-            if (n.key !== 'oven' || !range) return n;
-            return { key: 'oven', label: 'Oven or range', emoji: n.emoji, hint: 'bake, reheat or simmer here' };
-          });
+          return NEEDS.filter(function (n) { return n.key !== 'range' || range; });
         },
 
-        get temps() { return this.rangeOn ? ['range'].concat(TEMPS) : TEMPS; },
+        temps: TEMPS,
 
-        tempLabel: function (t) { return t === 'range' ? 'Stovetop' : (t ? t + '°' : 'Just warming'); },
+        // The oven starts at 350°; people only touch the temperature if theirs differs.
+        needPicked: function () {
+          if (this.form.needs === 'oven' && this.form.temp === null) this.form.temp = 350;
+          this.formError = '';
+        },
+
+        tempLabel: function (t) { return t ? t + '°' : 'just warming'; },
 
         minsLabel: function (m) {
           if (m < 60) return m + ' min';
@@ -285,14 +292,14 @@
             return 'These want different temperatures, and one oven cannot do both at once. If yours can be cooked at home and reheated, the table thanks you.';
           }
           var total = this.ovenDishes.reduce(function (sum, d) { return sum + d.kitchen.mins; }, 0);
-          if (total >= 120) return 'That is ' + this.minsLabel(total).replace('1½', '1.5') + ' of oven time on top of the bird. Cooking at home and reheating helps.';
+          if (total >= 120) return 'That is ' + this.minsLabel(total).replace('1½', '1.5') + ' of oven time. Cooking at home and reheating helps.';
           return '';
         },
 
         // Shown in the form the moment someone picks a temperature that clashes.
         get ovenNote() {
           var f = this.form;
-          if (f.needs !== 'oven' || !f.temp || f.temp === 'range') return '';
+          if (f.needs !== 'oven' || !f.temp) return '';
           var self = this;
           var clash = this.ovenDishes.find(function (d) { return d.id !== f.id && d.kitchen.temp && d.kitchen.temp !== f.temp; });
           if (!clash) return '';
@@ -305,8 +312,8 @@
           if (!k || k.needs === 'none') return '';
           if (k.needs === 'cold') return '🧊 fridge';
           if (k.needs === 'hot') return '🍲 keep hot';
-          if (k.needs === 'range') return '🍳 stovetop · ' + this.minsLabel(k.mins);
-          return '🔥 ' + (k.temp ? k.temp + '°' : 'warm up') + ' · ' + this.minsLabel(k.mins);
+          if (k.needs === 'range') return '🍳 cooktop · ' + this.minsLabel(k.mins);
+          return '🔥 oven ' + (k.temp ? k.temp + '°' : 'warm-up') + ' · ' + this.minsLabel(k.mins);
         },
 
         toggleTag: function (t) {
@@ -323,8 +330,7 @@
           if (!f.mystery && !f.dish.trim()) { this.formError = 'What are you bringing? A working title is fine. Or flip the surprise switch.'; return; }
           if (!f.category) { this.formError = 'Pick the closest category. "Unclassifiable" is a real option.'; return; }
           if (this.kitchenOn && !f.needs) { this.formError = 'One more: what will it need when you get here?'; return; }
-          if (this.kitchenOn && f.needs === 'oven' && (f.temp === null || f.mins === null)) { this.formError = 'How hot, and for how long?'; return; }
-          if (f.temp === 'range' && !this.rangeOn) { this.formError = 'How hot, and for how long?'; return; }
+          if (this.kitchenOn && (f.needs === 'oven' || f.needs === 'range') && f.mins === null) { this.formError = 'For how long?'; return; }
 
           var editing = !!f.id;
           var id = f.id || P.uuid();
@@ -333,8 +339,8 @@
             id: id, token: token,
             name: f.name.trim(), dish: f.mystery ? '' : f.dish.trim(), category: f.category,
             tags: f.tags.slice(), note: f.note.trim(),
-            kitchen: f.needs !== 'oven' ? { needs: f.needs }
-              : (f.temp === 'range' ? { needs: 'range', mins: f.mins } : { needs: 'oven', temp: f.temp, mins: f.mins })
+            kitchen: f.needs === 'oven' ? { needs: 'oven', temp: f.temp === null ? 350 : f.temp, mins: f.mins }
+              : (f.needs === 'range' ? { needs: 'range', mins: f.mins } : { needs: f.needs })
           };
           this.saving = true;
           this.call(editing ? 'updateDish' : 'addDish', payload).then(function (res) {
@@ -348,6 +354,7 @@
             self.apply(res);
             self.form = blankForm(payload.name);
             self.showDetails = false;
+            self.showTemps = false;
             self.syncOther();
             self.say(editing ? 'Updated. The menu stands corrected.' : 'You are on the menu!');
             if (!editing) self.celebrate();
@@ -364,12 +371,13 @@
         edit: function (d) {
           this.form = {
             id: d.id, name: d.name, dish: d.dish || '', mystery: !d.dish, category: d.category,
-            needs: d.kitchen ? (d.kitchen.needs === 'range' ? 'oven' : d.kitchen.needs) : '',
-            temp: d.kitchen && d.kitchen.needs === 'oven' ? d.kitchen.temp : (d.kitchen && d.kitchen.needs === 'range' ? 'range' : null),
+            needs: d.kitchen ? d.kitchen.needs : '',
+            temp: d.kitchen && d.kitchen.needs === 'oven' ? d.kitchen.temp : null,
             mins: d.kitchen && (d.kitchen.needs === 'oven' || d.kitchen.needs === 'range') ? d.kitchen.mins : null,
             tags: (d.tags || []).slice(), note: d.note || '', website: ''
           };
           this.showDetails = !!(this.form.tags.length || this.form.note);
+          this.showTemps = this.form.needs === 'oven' && this.form.temp !== 350;
           this.syncOther();
           this.formError = '';
           this.confirmRemove = null;
@@ -379,6 +387,7 @@
         cancelEdit: function () {
           this.form = blankForm(store('odo:name') || '');
           this.showDetails = false;
+          this.showTemps = false;
           this.syncOther();
           this.formError = '';
         },
