@@ -59,6 +59,7 @@ The **shareLink** row in Settings is the link to text the family. It has the sec
 - **Kitchen column:** what the dish needs on arrival: `none`, `cold`, `hot`, `oven|350|60` (degrees, minutes) or `range|30` (cooktop, minutes). You can edit these by hand.
 - **Open the vote on the day:** tick the **votingOpen** box in Settings. Untick to close.
 - **Lock everyone out:** change **accessKey** in Settings. The old link stops working; the new shareLink works.
+- **Idea shelf:** recipes guests add on the ideas page land in the **Ideas** tab (made the first time someone adds one) and show in the list under their category. Fix or delete a row there, or type one in by hand: `idea` is the dish, `link` is optional and must start with `http`, `category` is `appetizer`, `main`, `side`, `sweet` or `bread`.
 - **See the results later:** the **Votes** tab has one row per vote; the `kind` column says `keep` or `never`.
 
 ## If you ever change Code.gs

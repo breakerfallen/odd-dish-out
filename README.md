@@ -16,6 +16,7 @@ A static page (no build step) that reads and writes a Google Sheet through a sma
 - `index.html`, `styles.css`, `app.js`: the page
 - `lib/potluck.js`: balance, duplicate and edit-token helpers
 - `ideas.js`: spinner prompts
+- `ideas.html`, `shelf.js`: the idea shelf, a list of recipe links that guests can add to
 - `config.js`: the Apps Script URL
 - `mock.js`: in-browser demo backend, used only while `config.js` has no URL (demo link: `index.html#k=test-key`)
 - `apps-script/Code.gs`: the Sheet backend
