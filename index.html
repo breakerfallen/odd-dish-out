@@ -13,12 +13,12 @@
   <link rel="preconnect" href="https://fonts.googleapis.com">
   <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
   <link href="https://fonts.googleapis.com/css2?family=Bagel+Fat+One&family=Fredoka:wght@400;500;600&display=swap" rel="stylesheet">
-  <link rel="stylesheet" href="styles.css?v=22">
-  <script src="config.js?v=22"></script>
-  <script src="lib/potluck.js?v=22"></script>
-  <script src="ideas.js?v=22"></script>
-  <script src="mock.js?v=22"></script>
-  <script src="app.js?v=22"></script>
+  <link rel="stylesheet" href="styles.css?v=24">
+  <script src="config.js?v=24"></script>
+  <script src="lib/potluck.js?v=24"></script>
+  <script src="ideas.js?v=24"></script>
+  <script src="mock.js?v=24"></script>
+  <script src="app.js?v=24"></script>
   <script defer src="https://cdn.jsdelivr.net/npm/canvas-confetti@1.9.4/dist/confetti.browser.min.js"></script>
   <script defer src="https://cdn.jsdelivr.net/npm/alpinejs@3.17.5/dist/cdn.min.js"></script>
 </head>
@@ -62,16 +62,16 @@
         <span class="line" aria-hidden="true">OUT</span>
       </h1>
       <p class="lede">Bring the dish that doesn't belong. It might earn a permanent seat at the table.</p>
-      <ul class="facts">
-        <li x-show="event.eventDate"><span aria-hidden="true">📅</span> <span x-text="event.eventDate"></span></li>
-        <li x-show="event.eventTime"><span aria-hidden="true">⏰</span> <span x-text="event.eventTime"></span></li>
-        <li class="due" x-show="event.deadline && !votingOpen"><span aria-hidden="true">✍️</span> <span x-text="'Sign up by ' + event.deadline"></span></li>
-        <li x-show="event.address">
-          <span aria-hidden="true">📍</span>
+      <div class="facts">
+        <p class="when" x-show="event.eventDate || event.eventTime">
+          <span x-text="event.eventDate"></span><span x-show="event.eventDate && event.eventTime"> · </span><span x-text="event.eventTime"></span>
+        </p>
+        <p class="where" x-show="event.address">
           <a :href="mapLink" target="_blank" rel="noopener noreferrer" x-text="event.address"></a>
-        </li>
-      </ul>
-      <p class="host-note" x-show="event.hostNote" x-text="event.hostNote"></p>
+        </p>
+        <p class="host-note" x-show="event.hostNote" x-text="event.hostNote"></p>
+        <p class="due" x-show="event.deadline && !votingOpen" x-text="'Sign up by ' + event.deadline"></p>
+      </div>
     </header>
 
     <main :class="votingOpen ? 'voting' : ''">
@@ -92,7 +92,7 @@
       <section class="bar">
         <p class="bar-open">Open bar</p>
         <h2>Home of<br>Wayward Bottles</h2>
-        <p>A mishmash of liquors people have given us, plus whatever survived decades of cocktails. All orphans welcome. All orphans poured.</p>
+        <p>A mishmash of liquors people have given us, plus whatever survived decades of cocktails. Every bottle welcome. Every bottle poured.</p>
         <span class="bottles" aria-hidden="true">🍾🥃🍶🧉</span>
       </section>
 
@@ -104,7 +104,7 @@
         </div>
         <div class="tally">
           <template x-for="c in cats" :key="c.key">
-            <div class="tile" :class="'c-' + c.key">
+            <div class="tile" :class="['c-' + c.key, count(c.key) ? '' : 'zero']">
               <span class="tile-emoji" aria-hidden="true" x-text="c.emoji"></span>
               <span class="tile-label" x-text="c.label"></span>
               <span class="tile-count" x-text="count(c.key)"></span>
@@ -151,7 +151,7 @@
         <h2 x-text="form.id ? 'Change your dish' : 'Sign up a dish'"></h2>
                 <p class="deadline" x-show="event.deadline && !form.id">
           <b x-text="'Please sign up by ' + event.deadline + '.'"></b>
-          We're planning what we cook around what's coming, and around who needs the oven or cooktop. A surprise or "undecided" entry counts.
+          All we need is a category and whether your dish needs the oven or cooktop, so we can plan our cooking around it. You can name the dish later.
         </p>
         <form @submit.prevent="submit()" novalidate>
           <div class="field">
