@@ -121,6 +121,9 @@
         dishes: [],
         votes: {},
         myVotes: [],
+        nevers: {},
+        myNevers: [],
+        neverOn: false,   // true once the Sheet script can store 'never again' votes
         votingOpen: false,
         mine: [],
         tagList: TAGS,
@@ -181,6 +184,9 @@
           this.dishes = res.dishes || [];
           this.votes = res.votes || {};
           this.myVotes = res.myVotes || [];
+          this.nevers = res.nevers || {};
+          this.myNevers = res.myNevers || [];
+          this.neverOn = (res.version || 1) >= 5;
           this.votingOpen = !!res.votingOpen;
           this.mine = this.dishes.filter(function (d) { return P.hasToken(d.id); }).map(function (d) { return d.id; });
           this.syncOther();
@@ -445,7 +451,8 @@
           var self = this;
           if (this.votingOpen) {
             var ranked = this.dishes.slice().sort(function (a, b) {
-              return (self.votes[b.id] || 0) - (self.votes[a.id] || 0);
+              var net = function (d) { return (self.votes[d.id] || 0) - (self.nevers[d.id] || 0); };
+              return (net(b) - net(a)) || ((self.votes[b.id] || 0) - (self.votes[a.id] || 0));
             });
             return ranked.length ? [{ key: 'all', label: '', emoji: '', dishes: ranked }] : [];
           }
@@ -525,17 +532,28 @@
         },
 
         voted: function (id) { return this.myVotes.indexOf(id) >= 0; },
+        nevered: function (id) { return this.myNevers.indexOf(id) >= 0; },
 
-        vote: function (d) {
+        // One vote per dish per phone: "keep" or "never". Tapping the one you
+        // already chose takes it back; tapping the other one switches.
+        vote: function (d, kind) {
           var self = this;
-          var on = !this.voted(d.id);
+          kind = kind === 'never' ? 'never' : 'keep';
+          var id = d.id;
+          var had = this.voted(id) ? 'keep' : (this.nevered(id) ? 'never' : '');
+          var on = had !== kind;
           // optimistic: show it right away, the server reply settles it
-          if (on) { this.myVotes.push(d.id); this.votes[d.id] = (this.votes[d.id] || 0) + 1; }
-          else {
-            this.myVotes = this.myVotes.filter(function (x) { return x !== d.id; });
-            this.votes[d.id] = Math.max(0, (this.votes[d.id] || 1) - 1);
+          if (had === 'keep') {
+            this.myVotes = this.myVotes.filter(function (x) { return x !== id; });
+            this.votes[id] = Math.max(0, (this.votes[id] || 1) - 1);
           }
-          this.call('vote', { dishId: d.id, on: on }).then(function (res) {
+          if (had === 'never') {
+            this.myNevers = this.myNevers.filter(function (x) { return x !== id; });
+            this.nevers[id] = Math.max(0, (this.nevers[id] || 1) - 1);
+          }
+          if (on && kind === 'keep') { this.myVotes.push(id); this.votes[id] = (this.votes[id] || 0) + 1; }
+          if (on && kind === 'never') { this.myNevers.push(id); this.nevers[id] = (this.nevers[id] || 0) + 1; }
+          this.call('vote', { dishId: id, on: on, kind: kind }).then(function (res) {
             if (res && res.ok) self.apply(res);
             else { self.say(ERRORS[res && res.error] || 'Vote did not count. Try again?'); self.refresh(false); }
           }).catch(function () { self.say('Vote did not count. Try again?'); self.refresh(false); });

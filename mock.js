@@ -19,6 +19,7 @@
         address: '',
         poultry: 'TBD',
         hostNote: '',
+        deadline: 'Sunday, November 22',
         guests: 'Alex, Sam, Jo, Robin',
         votingOpen: false
       },
@@ -32,19 +33,24 @@
   function state(s, voterId) {
     var counts = {};
     var mine = [];
+    var nevers = {};
+    var myNevers = [];
     s.votes.forEach(function (v) {
-      counts[v.dishId] = (counts[v.dishId] || 0) + 1;
-      if (v.voterId === voterId) mine.push(v.dishId);
+      var tally = v.kind === 'never' ? nevers : counts;
+      tally[v.dishId] = (tally[v.dishId] || 0) + 1;
+      if (v.voterId === voterId) (v.kind === 'never' ? myNevers : mine).push(v.dishId);
     });
     return {
       ok: true,
-      version: 4,
+      version: 5,
       event: s.settings,
       votingOpen: !!s.settings.votingOpen,
       dishes: s.dishes.map(function (d) {
         return { id: d.id, name: d.name, dish: d.dish, servings: d.servings || 0, category: d.category, tags: d.tags, note: d.note, createdAt: d.createdAt, kitchen: d.kitchen || null };
       }),
       votes: counts,
+      nevers: nevers,
+      myNevers: myNevers,
       myVotes: mine
     };
   }
@@ -87,7 +93,7 @@
         } else if (action === 'vote') {
           if (!s.settings.votingOpen) return resolve({ ok: false, error: 'voting_closed' });
           s.votes = s.votes.filter(function (v) { return !(v.voterId === p.voterId && v.dishId === p.dishId); });
-          if (p.on) s.votes.push({ voterId: p.voterId, dishId: p.dishId });
+          if (p.on) s.votes.push({ voterId: p.voterId, dishId: p.dishId, kind: p.kind === 'never' ? 'never' : 'keep' });
         }
         write(s);
         resolve(state(s, p.voterId));

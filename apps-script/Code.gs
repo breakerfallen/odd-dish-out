@@ -14,7 +14,8 @@ var SITE_URL = 'https://breakerfallen.github.io/odd-dish-out/';
 var CATS = ['appetizer', 'protein', 'veg', 'salad', 'starch', 'bread', 'sweet', 'sip', 'wild', 'green', 'carb'];
 var DISH_HEADERS = ['id', 'name', 'dish', 'category', 'servings', 'tags', 'note', 'createdAt', 'tokenHash', 'kitchen'];
 var KITCHEN_COL = 10;
-var VOTE_HEADERS = ['voterId', 'dishId', 'at'];
+var VOTE_HEADERS = ['voterId', 'dishId', 'at', 'kind'];
+var DEFAULT_DEADLINE = 'Sunday, November 22';
 var MAX_DISHES = 150;
 var MAX_VOTES = 5000;
 var CACHE_SECONDS = 10;
@@ -43,7 +44,10 @@ function setup() {
     settings.getRange('A10').setValue('shareLink');
     settings.getRange('B10').setFormula('=B8&"#k="&B2');
     settings.getRange('C10').setValue('Text this link to the family. It updates if you change the key.');
-    settings.getRange('A11:C11').setNumberFormat('@').setValues([['guests', '', 'Guest first names, separated by commas. Each shows as a blank in the lineup until they sign up.']]);
+    settings.getRange('A11:C12').setNumberFormat('@').setValues([
+      ['guests', '', 'Guest first names, separated by commas. Each shows as a blank in the lineup until they sign up.'],
+      ['deadline', DEFAULT_DEADLINE, 'Sign up by this date. Type none to hide it.']
+    ]);
     settings.getRange('A1:C1').setFontWeight('bold');
     settings.setFrozenRows(1);
     settings.setColumnWidth(1, 120);
@@ -134,13 +138,15 @@ function write_(action, req, snap, voterId) {
     if (!voterId || !idOk_(req.dishId)) return 'missing_fields';
     if (!snap.dishes.some(function (d) { return d.id === req.dishId; })) return 'not_found';
     sh = ss.getSheetByName('Votes');
+    // sheets made before 'never again' votes existed lack this header
+    if (!sh.getRange(1, 4).getValue()) sh.getRange(1, 4).setValue('kind').setFontWeight('bold');
     for (i = snap.votes.length - 1; i >= 0; i--) {
       if (snap.votes[i].voterId === voterId && snap.votes[i].dishId === req.dishId) sh.deleteRow(snap.votes[i].row);
     }
     if (req.on) {
       if (snap.votes.length >= MAX_VOTES) return 'full';
       sh.getRange(sh.getLastRow() + 1, 1, 1, VOTE_HEADERS.length)
-        .setValues([[voterId, req.dishId, new Date().toISOString()]]);
+        .setValues([[voterId, req.dishId, new Date().toISOString(), req.kind === 'never' ? 'never' : 'keep']]);
     }
     return '';
   }
@@ -239,7 +245,7 @@ function snapshot_(fresh) {
 
   var votes = [];
   rows_(ss.getSheetByName('Votes'), VOTE_HEADERS.length).forEach(function (r, i) {
-    if (r[0] && r[1]) votes.push({ row: i + 2, voterId: String(r[0]), dishId: String(r[1]) });
+    if (r[0] && r[1]) votes.push({ row: i + 2, voterId: String(r[0]), dishId: String(r[1]), kind: String(r[3]).trim().toLowerCase() === 'never' ? 'never' : 'keep' });
   });
 
   var snap = { settings: settings, dishes: dishes, votes: votes };
@@ -260,21 +266,26 @@ function state_(snap, voterId) {
   snap.dishes.forEach(function (d) { known[d.id] = true; });
   var counts = {};
   var mine = [];
+  var nevers = {};
+  var myNevers = [];
   snap.votes.forEach(function (v) {
     if (!known[v.dishId]) return;
-    counts[v.dishId] = (counts[v.dishId] || 0) + 1;
-    if (voterId && v.voterId === voterId) mine.push(v.dishId);
+    var tally = v.kind === 'never' ? nevers : counts;
+    tally[v.dishId] = (tally[v.dishId] || 0) + 1;
+    if (voterId && v.voterId === voterId) (v.kind === 'never' ? myNevers : mine).push(v.dishId);
   });
   var s = snap.settings;
   return {
     ok: true,
-    version: 4,
+    version: 5,
     event: {
       eventDate: String(s.eventDate || ''),
       eventTime: String(s.eventTime || ''),
       address: String(s.address || ''),
       poultry: String(s.poultry || ''),
       hostNote: String(s.hostNote || ''),
+      // sign-up deadline; add a `deadline` row in Settings to change it, or set it to `none` to hide it
+      deadline: /^none$/i.test(String(s.deadline || '').trim()) ? '' : String(s.deadline || DEFAULT_DEADLINE),
       guests: String(s.guests || '').split(/[,;\n]/).map(function (g) { return g.trim().slice(0, 40); }).filter(Boolean).slice(0, 80)
     },
     votingOpen: !!s.votingOpen,
@@ -285,7 +296,9 @@ function state_(snap, voterId) {
       };
     }),
     votes: counts,
-    myVotes: mine
+    myVotes: mine,
+    nevers: nevers,
+    myNevers: myNevers
   };
 }
 

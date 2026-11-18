@@ -13,12 +13,12 @@
   <link rel="preconnect" href="https://fonts.googleapis.com">
   <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
   <link href="https://fonts.googleapis.com/css2?family=Bagel+Fat+One&family=Fredoka:wght@400;500;600&display=swap" rel="stylesheet">
-  <link rel="stylesheet" href="styles.css?v=19">
-  <script src="config.js?v=19"></script>
-  <script src="lib/potluck.js?v=19"></script>
-  <script src="ideas.js?v=19"></script>
-  <script src="mock.js?v=19"></script>
-  <script src="app.js?v=19"></script>
+  <link rel="stylesheet" href="styles.css?v=21">
+  <script src="config.js?v=21"></script>
+  <script src="lib/potluck.js?v=21"></script>
+  <script src="ideas.js?v=21"></script>
+  <script src="mock.js?v=21"></script>
+  <script src="app.js?v=21"></script>
   <script defer src="https://cdn.jsdelivr.net/npm/canvas-confetti@1.9.4/dist/confetti.browser.min.js"></script>
   <script defer src="https://cdn.jsdelivr.net/npm/alpinejs@3.17.5/dist/cdn.min.js"></script>
 </head>
@@ -65,6 +65,7 @@
       <ul class="facts">
         <li x-show="event.eventDate"><span aria-hidden="true">📅</span> <span x-text="event.eventDate"></span></li>
         <li x-show="event.eventTime"><span aria-hidden="true">⏰</span> <span x-text="event.eventTime"></span></li>
+        <li class="due" x-show="event.deadline && !votingOpen"><span aria-hidden="true">✍️</span> <span x-text="'Sign up by ' + event.deadline"></span></li>
         <li x-show="event.address">
           <span aria-hidden="true">📍</span>
           <a :href="mapLink" target="_blank" rel="noopener noreferrer" x-text="event.address"></a>
@@ -148,7 +149,11 @@
       <!-- 5. Sign up -->
       <section class="card signup" id="signup">
         <h2 x-text="form.id ? 'Change your dish' : 'Sign up a dish'"></h2>
-                <form @submit.prevent="submit()" novalidate>
+                <p class="deadline" x-show="event.deadline && !form.id">
+          <b x-text="'Please sign up by ' + event.deadline + '.'"></b>
+          We're planning what we cook around what's coming, and around who needs the oven or cooktop. A surprise or "undecided" entry counts.
+        </p>
+        <form @submit.prevent="submit()" novalidate>
           <div class="field">
             <span class="field-label" id="name-label">Your name</span>
             <div class="chips name-chips" role="group" aria-labelledby="name-label" x-show="guestList.length">
@@ -272,7 +277,7 @@
         <div class="section-head">
           <h2 x-text="votingOpen ? 'The rotation vote' : 'The lineup'"></h2>
         </div>
-        <p class="vote-intro" x-show="votingOpen">Tap <b>Keep it</b> on every dish that deserves a permanent spot. Vote for as many as you like. Change your mind freely.</p>
+        <p class="vote-intro" x-show="votingOpen">Tap <b>Keep it</b> on every dish that deserves a permanent spot<span x-show="neverOn">, and <b>Never again</b> on the ones that should not come back</span>. Vote on as many as you like. Change your mind freely.</p>
 
         <p class="empty" x-show="!dishes.length" x-text="pending.length ? 'No auditions yet. Find your name and fill in the blank.' : 'No auditions yet. The stage is yours.'"></p>
 
@@ -297,12 +302,20 @@
                   <p class="note" x-show="d.note" x-text="d.note"></p>
                 </div>
 
-                <button class="vote" type="button" x-show="votingOpen" :class="voted(d.id) ? 'on' : ''"
-                        :aria-pressed="voted(d.id) ? 'true' : 'false'" @click="vote(d)">
-                  <span class="vote-emoji" aria-hidden="true">🏆</span>
-                  <span class="vote-label" x-text="voted(d.id) ? 'Kept!' : 'Keep it'"></span>
-                  <span class="vote-count" x-text="votes[d.id] || 0"></span>
-                </button>
+                <div class="votes" x-show="votingOpen">
+                  <button class="vote keep" type="button" :class="voted(d.id) ? 'on' : ''"
+                          :aria-pressed="voted(d.id) ? 'true' : 'false'" @click="vote(d, 'keep')">
+                    <span class="vote-emoji" aria-hidden="true">🏆</span>
+                    <span class="vote-label" x-text="voted(d.id) ? 'Kept!' : 'Keep it'"></span>
+                    <span class="vote-count" x-text="votes[d.id] || 0"></span>
+                  </button>
+                  <button class="vote never" type="button" x-show="neverOn" :class="nevered(d.id) ? 'on' : ''"
+                          :aria-pressed="nevered(d.id) ? 'true' : 'false'" @click="vote(d, 'never')">
+                    <span class="vote-emoji" aria-hidden="true">🚫</span>
+                    <span class="vote-label">Never again</span>
+                    <span class="vote-count" x-text="nevers[d.id] || 0"></span>
+                  </button>
+                </div>
 
                 <div class="dish-actions" x-show="isMine(d.id)">
                   <template x-if="confirmRemove !== d.id">

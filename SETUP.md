@@ -41,6 +41,7 @@ In the **Settings** tab, column B:
 | eventTime | e.g. `Doors at 3, dinner at 5` |
 | address | your address (shows as a maps link; leave empty to hide) |
 | hostNote | optional extra line (parking, dress code, anything) |
+| deadline | the sign-up date shown on the page, e.g. `Sunday, November 22`. Add this row if it isn't there; type `none` to hide it |
 | guests | first names separated by commas, e.g. `Alex, Sam, Jo`. These are the only names the sign-up form offers, and each shows as a blank in the lineup until that person signs up. Include yourself |
 
 Changes show up on the page within about 30 seconds.
@@ -58,7 +59,7 @@ The **shareLink** row in Settings is the link to text the family. It has the sec
 - **Kitchen column:** what the dish needs on arrival: `none`, `cold`, `hot`, `oven|350|60` (degrees, minutes) or `range|30` (cooktop, minutes). You can edit these by hand.
 - **Open the vote on the day:** tick the **votingOpen** box in Settings. Untick to close.
 - **Lock everyone out:** change **accessKey** in Settings. The old link stops working; the new shareLink works.
-- **See the results later:** the **Votes** tab has one row per vote.
+- **See the results later:** the **Votes** tab has one row per vote; the `kind` column says `keep` or `never`.
 
 ## If you ever change Code.gs
 
