@@ -38,7 +38,7 @@
     });
     return {
       ok: true,
-      version: 2,
+      version: 3,
       event: s.settings,
       votingOpen: !!s.settings.votingOpen,
       dishes: s.dishes.map(function (d) {

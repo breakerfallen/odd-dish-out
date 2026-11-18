@@ -186,11 +186,11 @@ main { display: grid; grid-template-columns: minmax(0, 1fr); gap: 22px; }
 .name-chips + input { margin-top: 10px; }
 .name-chip { justify-content: center; text-align: center; font: inherit; font-weight: 600; font-size: 1.05rem; color: var(--ink); min-height: 48px; padding: 8px 18px; --c: var(--pickle); }
 .chip.need { --c: var(--sky); }
-.oven-box { margin-top: 14px; padding: 14px; border: 2.5px dashed var(--line); border-radius: 14px; }
+.oven-box { margin-top: 14px; padding: 12px; min-width: 0; border: 2.5px dashed var(--line); border-radius: 14px; }
 .oven-box .field-label + .chips { margin-bottom: 14px; }
 .oven-box .chips:last-child { margin-bottom: 0; }
 .chips.pick-chips { grid-template-columns: repeat(3, 1fr); }
-.pick { font: inherit; font-weight: 600; color: var(--ink); justify-content: center; text-align: center; min-height: 48px; padding: 6px 4px; --c: var(--persimmon); }
+.pick { min-width: 0; overflow-wrap: anywhere; font: inherit; font-size: 0.95rem; font-weight: 600; color: var(--ink); justify-content: center; text-align: center; min-height: 48px; padding: 6px 4px; --c: var(--persimmon); }
 .aside.clash { margin: 12px 0 0; border-left-color: var(--persimmon); color: var(--ink); }
 .safety ul { margin: 0 0 12px; padding-left: 20px; display: grid; gap: 8px; }
 .safety p { font-size: 0.95rem; }

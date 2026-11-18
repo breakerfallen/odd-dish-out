@@ -268,7 +268,7 @@ function state_(snap, voterId) {
   var s = snap.settings;
   return {
     ok: true,
-    version: 2,
+    version: 3,
     event: {
       eventDate: String(s.eventDate || ''),
       eventTime: String(s.eventTime || ''),
@@ -311,15 +311,17 @@ function shown_(value) {
 
 /**
  * What a dish needs from the kitchen on arrival, stored in one cell as
- * `none`, `cold`, `hot`, or `oven|350|60` (degrees F, minutes; 0 degrees = just warming).
+ * `none`, `cold`, `hot`, `oven|350|60` (degrees F, minutes; 0 degrees = just warming),
+ * or `range|30` (stovetop, minutes).
  */
 function kitchenIn_(k) {
   if (!k || typeof k !== 'object') return '';
   var needs = String(k.needs || '');
   if (['none', 'cold', 'hot'].indexOf(needs) >= 0) return needs;
+  var mins = parseInt(k.mins, 10) || 0;
+  if (needs === 'range') return 'range|' + Math.max(5, Math.min(480, mins));
   if (needs !== 'oven') return '';
   var temp = parseInt(k.temp, 10) || 0;
-  var mins = parseInt(k.mins, 10) || 0;
   if (temp !== 0 && (temp < 150 || temp > 550)) temp = 0;
   mins = Math.max(5, Math.min(480, mins));
   return 'oven|' + temp + '|' + mins;
@@ -328,6 +330,7 @@ function kitchenIn_(k) {
 function kitchenOut_(cell) {
   var parts = String(cell == null ? '' : cell).trim().toLowerCase().split('|');
   if (['none', 'cold', 'hot'].indexOf(parts[0]) >= 0) return { needs: parts[0] };
+  if (parts[0] === 'range') return { needs: 'range', mins: parseInt(parts[1], 10) || 0 };
   if (parts[0] === 'oven') return { needs: 'oven', temp: parseInt(parts[1], 10) || 0, mins: parseInt(parts[2], 10) || 0 };
   return null;
 }

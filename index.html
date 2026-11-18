@@ -13,12 +13,12 @@
   <link rel="preconnect" href="https://fonts.googleapis.com">
   <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
   <link href="https://fonts.googleapis.com/css2?family=Bagel+Fat+One&family=Fredoka:wght@400;500;600&display=swap" rel="stylesheet">
-  <link rel="stylesheet" href="styles.css?v=14">
-  <script src="config.js?v=14"></script>
-  <script src="lib/potluck.js?v=14"></script>
-  <script src="ideas.js?v=14"></script>
-  <script src="mock.js?v=14"></script>
-  <script src="app.js?v=14"></script>
+  <link rel="stylesheet" href="styles.css?v=15">
+  <script src="config.js?v=15"></script>
+  <script src="lib/potluck.js?v=15"></script>
+  <script src="ideas.js?v=15"></script>
+  <script src="mock.js?v=15"></script>
+  <script src="app.js?v=15"></script>
   <script defer src="https://cdn.jsdelivr.net/npm/canvas-confetti@1.9.4/dist/confetti.browser.min.js"></script>
   <script defer src="https://cdn.jsdelivr.net/npm/alpinejs@3.17.5/dist/cdn.min.js"></script>
 </head>
@@ -126,6 +126,14 @@
             </ul>
             <p class="k-warn" x-show="ovenVerdict" x-text="ovenVerdict"></p>
           </div>
+          <div class="k-row" x-show="byNeed('range').length">
+            <p class="k-head"><span aria-hidden="true">🍳</span> Range</p>
+            <ul>
+              <template x-for="d in byNeed('range')" :key="d.id">
+                <li><b x-text="minsLabel(d.kitchen.mins)"></b> <span x-text="': ' + title(d) + ' (' + d.name + ')'"></span></li>
+              </template>
+            </ul>
+          </div>
           <div class="k-row" x-show="byNeed('hot').length">
             <p class="k-head"><span aria-hidden="true">🍲</span> Staying hot</p>
             <p x-text="namesFor('hot')"></p>
@@ -192,7 +200,7 @@
               </template>
             </div>
             <div class="oven-box" x-show="form.needs === 'oven'">
-              <span class="field-label" id="temp-label">How hot?</span>
+              <span class="field-label" id="temp-label" x-text="rangeOn ? 'Stovetop, or how hot an oven?' : 'How hot?'"></span>
               <div class="chips pick-chips" role="group" aria-labelledby="temp-label">
                 <template x-for="t in temps" :key="t">
                   <button type="button" class="chip small pick" :class="form.temp === t ? 'on' : ''"
@@ -332,7 +340,7 @@
           <li><b>The danger zone is 40°F to 140°F.</b> That's where bacteria grow fastest.</li>
           <li><b>Hot food stays hot:</b> 140°F or above. Wrap it well in an insulated carrier for the trip. Once you're here, we have a catering hot plate that a Pyrex dish can sit on.</li>
           <li><b>Cold food stays cold:</b> 40°F or below. A cooler with ice packs does it.</li>
-          <li><b>Reheating here?</b> You need to book oven space: choose "Oven time" when you sign up, so we can plan around the other dishes. Take it to 165°F. Soups, sauces and gravies to a boil.</li>
+          <li><b>Reheating here?</b> You need to book oven or range space when you sign up, so we can plan around the other dishes. Take it to 165°F. Soups, sauces and gravies to a boil.</li>
           <li><b>Two-hour rule:</b> nothing perishable sits out longer than 2 hours.</li>
         </ul>
         <p>More: <a href="https://www.lsuagcenter.com/profiles/aiverson/articles/page1520440253691" target="_blank" rel="noopener noreferrer">Potluck Safety, from the LSU AgCenter</a></p>
