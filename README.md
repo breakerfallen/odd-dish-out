@@ -2,7 +2,7 @@
 
 A phone-first sign-up page for a Thanksgiving of non-traditional dishes: an audition for the permanent rotation.
 
-- Explains the theme and what the hosts cover.
+- Explains the theme.
 - Dish sign-up with a loose category and optional dietary tags and notes. The dish itself can stay a surprise.
 - Live tally by category with a gentle nudge when the table tilts. Nothing is ever blocked.
 - Idea spinner for the undecided.

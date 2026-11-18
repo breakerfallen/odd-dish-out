@@ -13,12 +13,12 @@
   <link rel="preconnect" href="https://fonts.googleapis.com">
   <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
   <link href="https://fonts.googleapis.com/css2?family=Bagel+Fat+One&family=Fredoka:wght@400;500;600&display=swap" rel="stylesheet">
-  <link rel="stylesheet" href="styles.css?v=9">
-  <script src="config.js?v=9"></script>
-  <script src="lib/potluck.js?v=9"></script>
-  <script src="ideas.js?v=9"></script>
-  <script src="mock.js?v=9"></script>
-  <script src="app.js?v=9"></script>
+  <link rel="stylesheet" href="styles.css?v=12">
+  <script src="config.js?v=12"></script>
+  <script src="lib/potluck.js?v=12"></script>
+  <script src="ideas.js?v=12"></script>
+  <script src="mock.js?v=12"></script>
+  <script src="app.js?v=12"></script>
   <script defer src="https://cdn.jsdelivr.net/npm/canvas-confetti@1.9.4/dist/confetti.browser.min.js"></script>
   <script defer src="https://cdn.jsdelivr.net/npm/alpinejs@3.17.5/dist/cdn.min.js"></script>
 </head>
@@ -87,22 +87,12 @@
         <p class="rules"><strong>The rules:</strong> there aren't any. Bring whatever you want. All we ask is a glance at the tally below, so we don't end up with eleven breads.</p>
       </section>
 
-      <!-- 3. What the hosts cover -->
-      <section class="covered">
-        <h2>Already handled</h2>
-        <div class="bird">
-          <span class="bird-emoji" aria-hidden="true">🦃</span>
-          <div>
-            <h3>A poultry</h3>
-            <p x-text="poultryLine"></p>
-          </div>
-        </div>
-        <div class="bar">
-          <p class="bar-open">Open bar</p>
-          <h3>Home of<br>Wayward Bottles</h3>
-          <p>A mishmash of liquors people have given us, plus whatever survived decades of cocktails. All orphans welcome. All orphans poured.</p>
-          <span class="bottles" aria-hidden="true">🍾🥃🍶🧉</span>
-        </div>
+      <!-- 3. The bar -->
+      <section class="bar">
+        <p class="bar-open">Open bar</p>
+        <h2>Home of<br>Wayward Bottles</h2>
+        <p>A mishmash of liquors people have given us, plus whatever survived decades of cocktails. All orphans welcome. All orphans poured.</p>
+        <span class="bottles" aria-hidden="true">🍾🥃🍶🧉</span>
       </section>
 
       <!-- 4. The table so far -->
@@ -154,14 +144,12 @@
           <div class="field">
             <span class="field-label" id="name-label">Your name</span>
             <div class="chips name-chips" role="group" aria-labelledby="name-label" x-show="guestList.length">
-              <template x-for="g in guestList" :key="g">
-                <button type="button" class="chip small name-chip" :class="form.name === g && !form.other ? 'on' : ''"
-                        :aria-pressed="form.name === g && !form.other ? 'true' : 'false'" @click="pickName(g)" x-text="g"></button>
+              <template x-for="g in nameOptions" :key="g">
+                <button type="button" class="chip small name-chip" :class="form.name === g ? 'on' : ''"
+                        :aria-pressed="form.name === g ? 'true' : 'false'" @click="pickName(g)" x-text="g"></button>
               </template>
-              <button type="button" class="chip small name-chip else" :class="form.other ? 'on' : ''"
-                      :aria-pressed="form.other ? 'true' : 'false'" @click="pickOther()">Someone else</button>
             </div>
-            <input type="text" x-ref="nameInput" x-show="!guestList.length || form.other" x-model="form.name" maxlength="40"
+            <input type="text" x-show="!guestList.length" x-model="form.name" maxlength="40"
                    autocomplete="given-name" aria-labelledby="name-label" placeholder="Aunt Somebody">
           </div>
           <div class="field">
@@ -222,18 +210,6 @@
             <p class="aside clash" x-show="ovenNote" x-text="ovenNote"></p>
             <p class="hint" x-show="needHint" x-text="needHint"></p>
           </fieldset>
-
-          <details class="safety">
-            <summary><span aria-hidden="true">🌡️</span> Getting it here safely</summary>
-            <ul>
-              <li><b>The danger zone is 40°F to 140°F.</b> That's where bacteria grow fastest.</li>
-              <li><b>Hot food stays hot:</b> 140°F or above. Wrap it well in an insulated carrier, or bring the slow cooker.</li>
-              <li><b>Cold food stays cold:</b> 40°F or below. A cooler with ice packs does it.</li>
-              <li><b>Reheating here?</b> Take it to 165°F. Soups, sauces and gravies to a boil.</li>
-              <li><b>Two-hour rule:</b> nothing perishable sits out longer than 2 hours.</li>
-            </ul>
-            <p>More: <a href="https://www.lsuagcenter.com/profiles/aiverson/articles/page1520440253691" target="_blank" rel="noopener noreferrer">Potluck Safety, from the LSU AgCenter</a></p>
-          </details>
 
           <button class="more" type="button" x-show="!showDetails" @click="showDetails = true">＋ Add details <em>(optional)</em></button>
 
@@ -347,6 +323,19 @@
         </div>
 
         <p class="teaser" x-show="!votingOpen"><span aria-hidden="true">🏆</span> On the day, voting opens right here: everyone picks the dishes that earn a permanent spot in the rotation.</p>
+      </section>
+
+      <!-- 9. Food safety -->
+      <section class="card safety" id="safety">
+        <h2>Getting it here safely</h2>
+        <ul>
+          <li><b>The danger zone is 40°F to 140°F.</b> That's where bacteria grow fastest.</li>
+          <li><b>Hot food stays hot:</b> 140°F or above. Wrap it well in an insulated carrier, or bring the slow cooker.</li>
+          <li><b>Cold food stays cold:</b> 40°F or below. A cooler with ice packs does it.</li>
+          <li><b>Reheating here?</b> Take it to 165°F. Soups, sauces and gravies to a boil.</li>
+          <li><b>Two-hour rule:</b> nothing perishable sits out longer than 2 hours.</li>
+        </ul>
+        <p>More: <a href="https://www.lsuagcenter.com/profiles/aiverson/articles/page1520440253691" target="_blank" rel="noopener noreferrer">Potluck Safety, from the LSU AgCenter</a></p>
       </section>
 
     </main>

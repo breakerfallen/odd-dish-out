@@ -40,9 +40,8 @@ In the **Settings** tab, column B:
 |---|---|
 | eventTime | e.g. `Doors at 3, dinner at 5` |
 | address | your address (shows as a maps link; leave empty to hide) |
-| poultry | the bird, once you know. `TBD` shows "to be determined" |
 | hostNote | optional extra line (parking, dress code, anything) |
-| guests | first names separated by commas, e.g. `Alex, Sam, Jo`. Each shows as a blank in the lineup until that person signs up |
+| guests | first names separated by commas, e.g. `Alex, Sam, Jo`. These are the only names the sign-up form offers, and each shows as a blank in the lineup until that person signs up. Include yourself |
 
 Changes show up on the page within about 30 seconds.
 

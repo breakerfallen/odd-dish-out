@@ -154,7 +154,7 @@
           this.myVotes = res.myVotes || [];
           this.votingOpen = !!res.votingOpen;
           this.mine = this.dishes.filter(function (d) { return P.hasToken(d.id); }).map(function (d) { return d.id; });
-          if (!this.form.other) this.syncOther();
+          this.syncOther();
         },
 
         refresh: function (first) {
@@ -307,7 +307,7 @@
           var f = this.form;
           this.formError = '';
           if (P.isSpamSubmission(f.website)) return;
-          if (!f.name.trim()) { this.formError = this.guestList.length && !f.other ? 'Who are you? Tap your name.' : 'Who are you? (Name, please.)'; return; }
+          if (!f.name.trim()) { this.formError = this.guestList.length ? 'Who are you? Tap your name.' : 'Who are you? (Name, please.)'; return; }
           if (!f.mystery && !f.dish.trim()) { this.formError = 'What are you bringing? A working title is fine. Or flip the surprise switch.'; return; }
           if (!f.category) { this.formError = 'Pick the closest category. "Unclassifiable" is a real option.'; return; }
           if (this.kitchenOn && !f.needs) { this.formError = 'One more: what will it need when you get here?'; return; }
@@ -422,18 +422,19 @@
           this.formError = '';
         },
 
-        pickOther: function () {
-          if (this.form.other) return;
-          this.form.other = true;
-          this.form.name = '';
-          var self = this;
-          this.$nextTick(function () { if (self.$refs.nameInput) self.$refs.nameInput.focus(); });
+        // Names offered in the form. Only the guest list, plus the existing name
+        // when editing a dish the hosts entered under a name that is not on it.
+        get nameOptions() {
+          var list = this.guestList.slice();
+          var name = this.form.name.trim();
+          if (this.form.id && name && list.indexOf(name) < 0) list.push(name);
+          return list;
         },
 
-        // A name that is not on the guest list belongs in the "someone else" box.
+        // With a guest list, a remembered name that is not on it is dropped.
         syncOther: function () {
           var name = this.form.name.trim();
-          this.form.other = !!(this.guestList.length && name && this.guestList.indexOf(name) < 0);
+          if (this.guestList.length && !this.form.id && name && this.guestList.indexOf(name) < 0) this.form.name = '';
         },
 
         // Guests from the Sheet who have not signed up yet. A guest counts as
@@ -506,12 +507,6 @@
 
         // ---------- little helpers ----------
         get mapLink() { return this.event.address ? P.mapsUrl(this.event.address) : ''; },
-
-        get poultryLine() {
-          var p = String(this.event.poultry || '').trim();
-          if (!p || /^tbd$/i.test(p)) return 'Which bird? To be determined. Suspense is part of the menu.';
-          return 'This year: ' + p + '.';
-        },
 
         say: function (msg) {
           var self = this;

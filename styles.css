@@ -131,17 +131,6 @@ main { display: grid; grid-template-columns: minmax(0, 1fr); gap: 22px; }
 }
 
 /* ---------- what the hosts cover ---------- */
-.covered { display: grid; gap: 14px; }
-.covered > h2 { padding-left: 4px; }
-.bird {
-  display: flex; gap: 14px; align-items: center;
-  background: var(--pickle); color: var(--on-color);
-  border: 2.5px solid var(--line); border-radius: var(--radius);
-  box-shadow: 5px 5px 0 var(--shadow); padding: 16px 18px;
-}
-.bird-emoji { font-size: 2.8rem; line-height: 1; transform: rotate(-8deg); }
-.bird h3 { font-size: 1.4rem; margin-bottom: 2px; }
-
 .bar {
   position: relative; overflow: hidden;
   background: var(--plum); color: #FFF3DC;
@@ -156,7 +145,7 @@ main { display: grid; grid-template-columns: minmax(0, 1fr); gap: 22px; }
   display: inline-block; font-size: 0.75rem; font-weight: 600; letter-spacing: 0.14em; text-transform: uppercase;
   color: #26132F; background: #FFC83D; padding: 3px 12px; border-radius: 999px; margin-bottom: 10px;
 }
-.bar h3 { font-size: 2.1rem; color: #FFC83D; margin-bottom: 10px; }
+.bar h2 { font-size: 2.1rem; color: #FFC83D; margin-bottom: 10px; }
 .bar p:not(.bar-open) { max-width: 30ch; margin: 0 auto; color: #EADCF0; }
 .bottles { display: block; margin-top: 12px; font-size: 1.7rem; letter-spacing: 0.2em; }
 
@@ -196,7 +185,6 @@ main { display: grid; grid-template-columns: minmax(0, 1fr); gap: 22px; }
 .chips.name-chips { grid-template-columns: 1fr 1fr; }
 .name-chips + input { margin-top: 10px; }
 .name-chip { justify-content: center; text-align: center; font: inherit; font-weight: 600; font-size: 1.05rem; color: var(--ink); min-height: 48px; padding: 8px 18px; --c: var(--pickle); }
-.name-chip.else { font-weight: 500; border-style: dashed; --c: var(--mustard); }
 .chip.need { --c: var(--sky); }
 .oven-box { margin-top: 14px; padding: 14px; border: 2.5px dashed var(--line); border-radius: 14px; }
 .oven-box .field-label + .chips { margin-bottom: 14px; }
@@ -204,10 +192,8 @@ main { display: grid; grid-template-columns: minmax(0, 1fr); gap: 22px; }
 .chips.pick-chips { grid-template-columns: repeat(3, 1fr); }
 .pick { font: inherit; font-weight: 600; color: var(--ink); justify-content: center; text-align: center; min-height: 48px; padding: 6px 4px; --c: var(--persimmon); }
 .aside.clash { margin: 12px 0 0; border-left-color: var(--persimmon); color: var(--ink); }
-details.safety { margin: 0 0 16px; border: 2.5px solid var(--line); border-radius: 14px; background: var(--bg); }
-details.safety summary { cursor: pointer; font-weight: 600; padding: 12px 14px; min-height: 48px; list-style-position: inside; }
-details.safety ul { margin: 0; padding: 0 14px 0 32px; display: grid; gap: 6px; font-size: 0.95rem; }
-details.safety p { padding: 10px 14px 14px; font-size: 0.95rem; }
+.safety ul { margin: 0 0 12px; padding-left: 20px; display: grid; gap: 8px; }
+.safety p { font-size: 0.95rem; }
 .kitchen { margin-top: 16px; border: 2.5px solid var(--line); border-radius: 14px; padding: 14px; background: var(--bg); }
 .kitchen h3 { font-size: 1.25rem; margin-bottom: 8px; }
 .k-row + .k-row { margin-top: 10px; padding-top: 10px; border-top: 2px dashed var(--line); }
