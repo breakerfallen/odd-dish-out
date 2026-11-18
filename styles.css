@@ -193,10 +193,14 @@ main { display: grid; grid-template-columns: minmax(0, 1fr); gap: 22px; }
 /* ---------- form ---------- */
 .field { display: block; border: 0; padding: 0; margin: 0 0 16px; min-width: 0; }
 .field > span, .field > legend, .field-label { display: block; font-weight: 600; margin-bottom: 6px; padding: 0; }
+.name-chips { display: flex; flex-wrap: wrap; }
+.name-chips + input { margin-top: 10px; }
+.name-chip { font: inherit; font-weight: 600; font-size: 1.05rem; color: var(--ink); min-height: 48px; padding: 8px 18px; --c: var(--pickle); }
+.name-chip.else { font-weight: 500; border-style: dashed; --c: var(--mustard); }
 .surprise { margin-top: 8px; display: inline-flex; --c: var(--grape); }
 .field > label + .surprise { margin-top: 10px; }
 .hint { margin-top: 8px; font-size: 0.95rem; color: var(--muted); }
-.servings input { max-width: 120px; }
+.more { font: inherit; font-weight: 600; color: var(--ink); background: none; border: 2.5px dashed var(--line); border-radius: 14px; width: 100%; min-height: 48px; padding: 8px 14px; margin-bottom: 16px; cursor: pointer; }
 .mystery { font-style: italic; opacity: 0.85; }
 input[type='text'], input[type='number'], textarea {
   width: 100%; font: inherit; font-size: 17px; color: var(--ink);

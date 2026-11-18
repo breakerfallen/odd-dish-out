@@ -128,12 +128,20 @@
       <!-- 5. Sign up -->
       <section class="card signup" id="signup">
         <h2 x-text="form.id ? 'Change your dish' : 'Sign up a dish'"></h2>
-        <p class="sub" x-show="!form.id">Bringing more than one? Sign up again for each.</p>
-        <form @submit.prevent="submit()" novalidate>
-          <label class="field">
-            <span>Your name</span>
-            <input type="text" x-model="form.name" maxlength="40" autocomplete="given-name" placeholder="Aunt Somebody">
-          </label>
+                <form @submit.prevent="submit()" novalidate>
+          <div class="field">
+            <span class="field-label" id="name-label">Your name</span>
+            <div class="chips name-chips" role="group" aria-labelledby="name-label" x-show="guestList.length">
+              <template x-for="g in guestList" :key="g">
+                <button type="button" class="chip small name-chip" :class="form.name === g && !form.other ? 'on' : ''"
+                        :aria-pressed="form.name === g && !form.other ? 'true' : 'false'" @click="pickName(g)" x-text="g"></button>
+              </template>
+              <button type="button" class="chip small name-chip else" :class="form.other ? 'on' : ''"
+                      :aria-pressed="form.other ? 'true' : 'false'" @click="pickOther()">Someone else</button>
+            </div>
+            <input type="text" x-ref="nameInput" x-show="!guestList.length || form.other" x-model="form.name" maxlength="40"
+                   autocomplete="given-name" aria-labelledby="name-label" placeholder="Aunt Somebody">
+          </div>
           <div class="field">
             <label x-show="!form.mystery">
               <span class="field-label">What are you bringing?</span>
@@ -162,12 +170,9 @@
           </fieldset>
           <p class="aside" x-show="catNote" x-text="catNote"></p>
 
-          <label class="field servings">
-            <span>Feeds about how many? <em>(optional)</em></span>
-            <input type="number" x-model="form.servings" min="1" max="99" inputmode="numeric" placeholder="8">
-          </label>
+          <button class="more" type="button" x-show="!showDetails" @click="showDetails = true">＋ Add details <em>(optional)</em></button>
 
-          <fieldset class="field">
+          <fieldset class="field" x-show="showDetails">
             <legend>Good to know <em>(optional)</em></legend>
             <div class="chips tag-chips">
               <template x-for="t in tagList" :key="t">
@@ -179,7 +184,7 @@
             </div>
           </fieldset>
 
-          <label class="field">
+          <label class="field" x-show="showDetails">
             <span>Anything else? <em>(optional)</em></span>
             <textarea x-model="form.note" maxlength="200" rows="2" placeholder="Needs oven space, the story behind it, a warning…"></textarea>
           </label>
@@ -229,7 +234,7 @@
                   </h4>
                   <p class="by">
                     <span x-show="votingOpen" aria-hidden="true" x-text="cat(d.category).emoji"></span>
-                    by <span x-text="d.name"></span><span x-show="d.servings > 0" x-text="' · feeds ~' + d.servings"></span><span class="you" x-show="isMine(d.id)">you</span>
+                    by <span x-text="d.name"></span><span class="you" x-show="isMine(d.id)">you</span>
                   </p>
                   <p class="tags" x-show="d.tags && d.tags.length">
                     <template x-for="t in (d.tags || [])" :key="t"><span class="tag" x-text="t"></span></template>

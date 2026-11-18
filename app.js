@@ -67,7 +67,7 @@
   }
 
   function blankForm(name) {
-    return { id: null, name: name || '', dish: '', mystery: false, servings: '', category: '', tags: [], note: '', website: '' };
+    return { id: null, name: name || '', other: false, dish: '', mystery: false, category: '', tags: [], note: '', website: '' };
   }
 
   document.addEventListener('alpine:init', function () {
@@ -93,6 +93,7 @@
         spinning: false,
         toast: '',
         formInView: false,
+        showDetails: false,
         offline: false,
 
         init: function () {
@@ -135,6 +136,7 @@
           this.myVotes = res.myVotes || [];
           this.votingOpen = !!res.votingOpen;
           this.mine = this.dishes.filter(function (d) { return P.hasToken(d.id); }).map(function (d) { return d.id; });
+          if (!this.form.other) this.syncOther();
         },
 
         refresh: function (first) {
@@ -227,7 +229,7 @@
           var f = this.form;
           this.formError = '';
           if (P.isSpamSubmission(f.website)) return;
-          if (!f.name.trim()) { this.formError = 'Who are you? (Name, please.)'; return; }
+          if (!f.name.trim()) { this.formError = this.guestList.length && !f.other ? 'Who are you? Tap your name.' : 'Who are you? (Name, please.)'; return; }
           if (!f.mystery && !f.dish.trim()) { this.formError = 'What are you bringing? A working title is fine. Or flip the surprise switch.'; return; }
           if (!f.category) { this.formError = 'Pick the closest category. "Unclassifiable" is a real option.'; return; }
 
@@ -237,7 +239,6 @@
           var payload = {
             id: id, token: token,
             name: f.name.trim(), dish: f.mystery ? '' : f.dish.trim(), category: f.category,
-            servings: Math.max(0, Math.min(99, parseInt(f.servings, 10) || 0)),
             tags: f.tags.slice(), note: f.note.trim()
           };
           this.saving = true;
@@ -251,6 +252,8 @@
             store('odo:name', payload.name);
             self.apply(res);
             self.form = blankForm(payload.name);
+            self.showDetails = false;
+            self.syncOther();
             self.say(editing ? 'Updated. The menu stands corrected.' : 'You are on the menu!');
             if (!editing) self.celebrate();
             self.$nextTick(function () { self.scrollTo('dish-' + id); });
@@ -265,9 +268,11 @@
 
         edit: function (d) {
           this.form = {
-            id: d.id, name: d.name, dish: d.dish || '', mystery: !d.dish, servings: d.servings || '', category: d.category,
+            id: d.id, name: d.name, dish: d.dish || '', mystery: !d.dish, category: d.category,
             tags: (d.tags || []).slice(), note: d.note || '', website: ''
           };
+          this.showDetails = !!(this.form.tags.length || this.form.note);
+          this.syncOther();
           this.formError = '';
           this.confirmRemove = null;
           this.scrollTo('signup');
@@ -275,6 +280,8 @@
 
         cancelEdit: function () {
           this.form = blankForm(store('odo:name') || '');
+          this.showDetails = false;
+          this.syncOther();
           this.formError = '';
         },
 
@@ -312,11 +319,44 @@
           }).filter(function (g) { return g.dishes.length; });
         },
 
+        // Guest names from the Sheet. When there are any, the form shows them
+        // as a tap-to-pick list instead of a free-text name box.
+        get guestList() {
+          var raw = this.event.guests || [];
+          var list = Array.isArray(raw) ? raw : String(raw).split(/[,;\n]/);
+          var seen = {};
+          return list.map(function (g) { return String(g).trim(); }).filter(function (g) {
+            var k = g.toLowerCase();
+            if (!k || seen[k]) return false;
+            seen[k] = true;
+            return true;
+          });
+        },
+
+        pickName: function (g) {
+          this.form.name = g;
+          this.form.other = false;
+          this.formError = '';
+        },
+
+        pickOther: function () {
+          if (this.form.other) return;
+          this.form.other = true;
+          this.form.name = '';
+          var self = this;
+          this.$nextTick(function () { if (self.$refs.nameInput) self.$refs.nameInput.focus(); });
+        },
+
+        // A name that is not on the guest list belongs in the "someone else" box.
+        syncOther: function () {
+          var name = this.form.name.trim();
+          this.form.other = !!(this.guestList.length && name && this.guestList.indexOf(name) < 0);
+        },
+
         // Guests from the Sheet who have not signed up yet. A guest counts as
         // signed up when a dish's name matches theirs, or starts with it ("Jenn S.").
         get pending() {
-          var raw = this.event.guests || [];
-          var guests = Array.isArray(raw) ? raw : String(raw).split(/[,;\n]/);
+          var guests = this.guestList;
           var signed = this.dishes.map(function (d) { return String(d.name).trim().toLowerCase(); });
           var seen = {};
           return guests.map(function (g) { return String(g).trim(); }).filter(function (g) {
@@ -332,6 +372,7 @@
         claim: function (guest) {
           if (this.form.id) this.cancelEdit();
           this.form.name = guest;
+          this.form.other = false;
           this.formError = '';
           this.scrollTo('signup');
         },
