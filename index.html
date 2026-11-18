@@ -220,8 +220,19 @@
             </div>
             <p class="aside clash" x-show="ovenNote" x-text="ovenNote"></p>
             <p class="hint" x-show="needHint" x-text="needHint"></p>
-            <p class="hint safety"><span aria-hidden="true">🌡️</span> Why we ask: hot food stays hot, cold food stays cold, and nothing perishable sits out more than 2 hours.</p>
           </fieldset>
+
+          <details class="safety">
+            <summary><span aria-hidden="true">🌡️</span> Getting it here safely</summary>
+            <ul>
+              <li><b>The danger zone is 40°F to 140°F.</b> That's where bacteria grow fastest.</li>
+              <li><b>Hot food stays hot:</b> 140°F or above. Wrap it well in an insulated carrier, or bring the slow cooker.</li>
+              <li><b>Cold food stays cold:</b> 40°F or below. A cooler with ice packs does it.</li>
+              <li><b>Reheating here?</b> Take it to 165°F. Soups, sauces and gravies to a boil.</li>
+              <li><b>Two-hour rule:</b> nothing perishable sits out longer than 2 hours.</li>
+            </ul>
+            <p>More: <a href="https://www.lsuagcenter.com/profiles/aiverson/articles/page1520440253691" target="_blank" rel="noopener noreferrer">Potluck Safety, from the LSU AgCenter</a></p>
+          </details>
 
           <button class="more" type="button" x-show="!showDetails" @click="showDetails = true">＋ Add details <em>(optional)</em></button>
 

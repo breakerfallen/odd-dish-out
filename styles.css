@@ -204,7 +204,10 @@ main { display: grid; grid-template-columns: minmax(0, 1fr); gap: 22px; }
 .chips.pick-chips { grid-template-columns: repeat(3, 1fr); }
 .pick { font: inherit; font-weight: 600; color: var(--ink); justify-content: center; text-align: center; min-height: 48px; padding: 6px 4px; --c: var(--persimmon); }
 .aside.clash { margin: 12px 0 0; border-left-color: var(--persimmon); color: var(--ink); }
-.hint.safety { font-size: 0.88rem; }
+details.safety { margin: 0 0 16px; border: 2.5px solid var(--line); border-radius: 14px; background: var(--bg); }
+details.safety summary { cursor: pointer; font-weight: 600; padding: 12px 14px; min-height: 48px; list-style-position: inside; }
+details.safety ul { margin: 0; padding: 0 14px 0 32px; display: grid; gap: 6px; font-size: 0.95rem; }
+details.safety p { padding: 10px 14px 14px; font-size: 0.95rem; }
 .kitchen { margin-top: 16px; border: 2.5px solid var(--line); border-radius: 14px; padding: 14px; background: var(--bg); }
 .kitchen h3 { font-size: 1.25rem; margin-bottom: 8px; }
 .k-row + .k-row { margin-top: 10px; padding-top: 10px; border-top: 2px dashed var(--line); }
