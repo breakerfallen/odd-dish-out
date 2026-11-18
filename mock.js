@@ -5,7 +5,7 @@
   'use strict';
   var STORE = 'odo:mock:v1';
   var KEY = 'test-key';
-  var CATS = ['protein', 'green', 'carb', 'sweet', 'sip', 'wild'];
+  var CATS = ['appetizer', 'protein', 'veg', 'salad', 'starch', 'bread', 'sweet', 'sip', 'wild', 'green', 'carb'];
 
   function read() {
     try {
@@ -38,7 +38,7 @@
     });
     return {
       ok: true,
-      version: 3,
+      version: 4,
       event: s.settings,
       votingOpen: !!s.settings.votingOpen,
       dishes: s.dishes.map(function (d) {

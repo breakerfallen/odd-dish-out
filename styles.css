@@ -165,7 +165,12 @@ main { display: grid; grid-template-columns: minmax(0, 1fr); gap: 22px; }
 .tile-count { font-family: var(--display); font-size: 1.7rem; line-height: 1; }
 
 .c-protein { --c: var(--persimmon); }
-.c-green { --c: var(--pickle); }
+.c-green, .c-veg { --c: var(--pickle); }
+.c-salad { --c: #7BDCA0; }
+.c-starch { --c: var(--mustard); }
+.c-bread { --c: #F2A65A; }
+.c-appetizer { --c: #5FD4C4; }
+.tally .tile:last-of-type:nth-of-type(odd), .cat-chips .chip:last-of-type:nth-of-type(odd) { grid-column: 1 / -1; }
 .c-carb { --c: var(--mustard); }
 .c-sweet { --c: var(--pink); }
 .c-sip { --c: var(--sky); }

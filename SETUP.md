@@ -53,7 +53,7 @@ The **shareLink** row in Settings is the link to text the family. It has the sec
 
 ## Running the party
 
-- **Fix or remove a sign-up:** edit or delete its row in the **Dishes** tab. Categories are `protein`, `green`, `carb`, `sweet`, `sip`, `wild`.
+- **Fix or remove a sign-up:** edit or delete its row in the **Dishes** tab. Categories are `appetizer`, `protein`, `veg`, `salad`, `starch`, `bread`, `sweet`, `sip`, `wild`.
 - **Add one for somebody:** type a new row in **Dishes** (name, dish, category). Leave `id` and `tokenHash` empty.
 - **Kitchen column:** what the dish needs on arrival: `none`, `cold`, `hot`, `oven|350|60` (degrees, minutes) or `range|30` (cooktop, minutes). You can edit these by hand.
 - **Open the vote on the day:** tick the **votingOpen** box in Settings. Untick to close.

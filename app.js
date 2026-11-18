@@ -8,14 +8,26 @@
   var POLL_MS = 20000;
 
   var CATS = [
+    { key: 'appetizer', label: 'Appetizer', emoji: '🫒', hint: 'nibbles before the meal' },
     { key: 'protein', label: 'Protein', emoji: '🍖', hint: 'meaty, fishy, beany, eggy' },
-    { key: 'green', label: 'Green things', emoji: '🥬', hint: 'veg, salads, slaws' },
-    { key: 'carb', label: 'Carbs & bread', emoji: '🥖', hint: 'starches, noodles, doughs' },
+    { key: 'veg', label: 'Vegetables', emoji: '🥦', hint: 'roasted, braised, sautéed' },
+    { key: 'salad', label: 'Salad', emoji: '🥬', hint: 'leafy, slaws, cold things' },
+    { key: 'starch', label: 'Starch', emoji: '🥔', hint: 'potatoes, rice, noodles' },
+    { key: 'bread', label: 'Bread', emoji: '🥖', hint: 'loaves, rolls, doughs' },
     { key: 'sweet', label: 'Sweet', emoji: '🍰', hint: 'dessert, more or less' },
     { key: 'sip', label: 'Sips', emoji: '🧃', hint: 'zero-proof oddities' },
     { key: 'wild', label: 'Unclassifiable', emoji: '🛸', hint: 'defies the categories' }
   ];
-  var CORE = ['protein', 'green', 'carb', 'sweet'];
+  var CORE = ['protein', 'veg', 'salad', 'starch', 'bread', 'sweet'];
+  // The shorter list a Sheet script older than version 4 understands.
+  var CATS_OLD = [
+    { key: 'protein', label: 'Protein', emoji: '🍖', hint: 'meaty, fishy, beany, eggy' },
+    { key: 'green', label: 'Green things', emoji: '🥬', hint: 'veg, salads, slaws' },
+    { key: 'carb', label: 'Carbs & bread', emoji: '🥖', hint: 'starches, noodles, doughs' },
+    CATS[6], CATS[7], CATS[8]
+  ];
+  var CORE_OLD = ['protein', 'green', 'carb', 'sweet'];
+  var ALL_CATS = CATS.concat([CATS_OLD[1], CATS_OLD[2]]);
   var NEEDS = [
     { key: 'none', label: 'Nothing', emoji: '🙂', hint: 'fine sitting out: bread, cookies' },
     { key: 'cold', label: 'Fridge space', emoji: '🧊', hint: 'served cold' },
@@ -36,18 +48,31 @@
   var THIN = {
     protein: 'The table could use something with heft. Protein of any species (or legume) welcome.',
     green: 'The table is begging for something green. Or purple. Any plant, really.',
+    veg: 'Not a vegetable in sight. Something roasted, braised or otherwise plant-based would be welcome.',
+    salad: 'No salad yet. Something crisp and cold would balance all this.',
+    starch: 'No starch yet. Potatoes, rice, noodles, grains: the table needs ballast.',
+    bread: 'No bread yet. Who is bringing something to mop up with?',
     carb: 'Suspiciously few carbs. Who is bringing something to soak up the Wayward Bottles?',
     sweet: 'Nobody has claimed dessert yet. This could be your moment.'
   };
   var HEAVY = {
     protein: 'We are drifting toward an all-protein Thanksgiving.',
     green: 'We are drifting toward an all-vegetable Thanksgiving.',
+    veg: 'We are drifting toward an all-vegetable Thanksgiving.',
+    salad: 'We are drifting toward an all-salad Thanksgiving.',
+    starch: 'We are drifting toward an all-starch Thanksgiving.',
+    bread: 'We are drifting toward an all-bread Thanksgiving.',
     carb: 'We are drifting toward an all-bread Thanksgiving.',
     sweet: 'We are drifting toward an all-dessert Thanksgiving.'
   };
   var MYSTERY = {
     protein: 'A mystery protein',
     green: 'A mystery green thing',
+    appetizer: 'A mystery appetizer',
+    veg: 'A mystery vegetable',
+    salad: 'A mystery salad',
+    starch: 'A mystery starch',
+    bread: 'A mystery bread',
     carb: 'A mystery carb',
     sweet: 'A mystery dessert',
     sip: 'A mystery sip',
@@ -98,7 +123,6 @@
         myVotes: [],
         votingOpen: false,
         mine: [],
-        cats: CATS,
         tagList: TAGS,
         times: TIMES,
         form: blankForm(),
@@ -111,6 +135,7 @@
         formInView: false,
         showDetails: false,
         showTemps: false,
+        newCats: false,   // true once the Sheet script knows the longer category list
         rangeOn: false,   // true once the Sheet script can also store stovetop bookings
         kitchenOn: false, // true once the Sheet script is new enough to save kitchen answers
         offline: false,
@@ -152,6 +177,7 @@
           this.event = res.event || {};
           this.kitchenOn = (res.version || 1) >= 2;
           this.rangeOn = (res.version || 1) >= 3;
+          this.newCats = (res.version || 1) >= 4;
           this.dishes = res.dishes || [];
           this.votes = res.votes || {};
           this.myVotes = res.myVotes || [];
@@ -180,6 +206,9 @@
 
         retry: function () { this.status = 'loading'; this.refresh(true); },
 
+        get cats() { return this.newCats ? CATS : CATS_OLD; },
+        get core() { return this.newCats ? CORE : CORE_OLD; },
+
         // ---------- the table so far ----------
         count: function (key) {
           return this.dishes.filter(function (d) { return d.category === key; }).length;
@@ -197,6 +226,7 @@
           var n = this.dishes.length;
           if (!n) return 'The table is empty. Somebody has to go first, and it may as well be the weirdest dish.';
           if (n < 3) return 'Early days. Anything goes. (It always does.)';
+          var CORE = this.core;
           var core = this.dishes.filter(function (d) { return CORE.indexOf(d.category) >= 0; });
           var target = Math.max(1, Math.ceil(core.length / CORE.length));
           var targets = {};
@@ -215,6 +245,7 @@
         // ---------- sign up ----------
         get catNote() {
           var key = this.form.category;
+          var CORE = this.core;
           if (CORE.indexOf(key) < 0) return '';
           var self = this;
           var editingId = this.form.id;
@@ -418,7 +449,7 @@
             });
             return ranked.length ? [{ key: 'all', label: '', emoji: '', dishes: ranked }] : [];
           }
-          return CATS.map(function (c) {
+          return ALL_CATS.map(function (c) {
             return {
               key: c.key, label: c.label, emoji: c.emoji,
               dishes: self.dishes.filter(function (d) { return d.category === c.key; })
@@ -486,7 +517,7 @@
         },
 
         cat: function (key) {
-          return CATS.find(function (c) { return c.key === key; }) || CATS[CATS.length - 1];
+          return ALL_CATS.find(function (c) { return c.key === key; }) || CATS[CATS.length - 1];
         },
 
         title: function (d) {

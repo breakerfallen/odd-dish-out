@@ -11,7 +11,7 @@
 // Where the page is published. Used only to build the share link in Settings.
 var SITE_URL = 'https://breakerfallen.github.io/odd-dish-out/';
 
-var CATS = ['protein', 'green', 'carb', 'sweet', 'sip', 'wild'];
+var CATS = ['appetizer', 'protein', 'veg', 'salad', 'starch', 'bread', 'sweet', 'sip', 'wild', 'green', 'carb'];
 var DISH_HEADERS = ['id', 'name', 'dish', 'category', 'servings', 'tags', 'note', 'createdAt', 'tokenHash', 'kitchen'];
 var KITCHEN_COL = 10;
 var VOTE_HEADERS = ['voterId', 'dishId', 'at'];
@@ -268,7 +268,7 @@ function state_(snap, voterId) {
   var s = snap.settings;
   return {
     ok: true,
-    version: 3,
+    version: 4,
     event: {
       eventDate: String(s.eventDate || ''),
       eventTime: String(s.eventTime || ''),
