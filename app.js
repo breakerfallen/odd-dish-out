@@ -26,7 +26,7 @@
   var TIMES = [15, 30, 45, 60, 90, 120];
   var NEED_HINT = {
     cold: 'Bring it cold. It goes straight into the fridge or onto ice until dinner.',
-    hot: 'Bring it hot and we will keep it hot. A slow cooker or an insulated carrier is your friend.',
+    hot: 'Bring it hot and we will keep it hot. We have a catering hot plate that a Pyrex dish can sit on, so a Pyrex is ideal.',
     oven: 'The bird has dibs on the oven. If yours can be cooked at home and just warmed here, even better.'
   };
   var TAGS = ['vegetarian', 'vegan', 'gluten-free', 'dairy-free', 'contains nuts', 'spicy'];
