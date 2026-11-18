@@ -279,6 +279,7 @@
         <button class="btn alt" type="button" @click="spin()" :disabled="spinning">
           <span aria-hidden="true">🎰</span> <span x-text="idea ? 'Spin again' : 'Give me an idea'"></span>
         </button>
+        <p style="text-align: center; margin-top: 8px"><a class="link" href="ideas.html" :href="'ideas.html#k=' + encodeURIComponent(key)">💡 Or browse the idea shelf</a></p>
       </section>
 
       <!-- 7 + 8. Lineup and rotation vote -->

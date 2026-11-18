@@ -1,0 +1,135 @@
+<!doctype html>
+<html lang="en">
+<head>
+  <meta charset="utf-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1, viewport-fit=cover">
+  <meta name="robots" content="noindex, nofollow, noarchive">
+  <meta name="referrer" content="no-referrer">
+  <meta name="theme-color" content="#FFF3DC" media="(prefers-color-scheme: light)">
+  <meta name="theme-color" content="#1D0F26" media="(prefers-color-scheme: dark)">
+  <title>Odd Dish Out: Idea shelf</title>
+  <link rel="icon" href="data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 100 100'%3E%3Ctext y='.9em' font-size='90'%3E💡%3C/text%3E%3C/svg%3E">
+  <link rel="preconnect" href="https://fonts.googleapis.com">
+  <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+  <link href="https://fonts.googleapis.com/css2?family=Bagel+Fat+One&family=Fredoka:wght@400;500;600&display=swap" rel="stylesheet">
+  <link rel="stylesheet" href="styles.css?v=24">
+  <!-- This page's own styles live here so the shared stylesheet stays untouched. -->
+  <style>
+    body { padding-bottom: calc(40px + env(safe-area-inset-bottom)); }
+    .back { display: inline-block; margin-top: 14px; }
+    .ideas-hero { padding-top: 8px; padding-bottom: 26px; text-align: center; }
+    .ideas-hero h1 { font-size: clamp(2.8rem, 14vw, 4.4rem); line-height: 0.95; margin-top: 14px; }
+    .ideas-hero h1 span { color: var(--persimmon); }
+    .ideas-hero .lede { max-width: 28ch; margin: 14px auto 0; }
+    .recipes { list-style: none; margin: 0 0 20px; padding: 0; }
+    .recipes:last-child { margin-bottom: 0; }
+    .recipes li { padding: 11px 0; border-top: 1.5px solid var(--soft); line-height: 1.3; }
+    .recipes a { font-weight: 600; }
+    .recipes em { font-size: 0.85rem; white-space: nowrap; margin-left: 4px; }
+    .add-link { display: inline-block; margin-top: 6px; }
+    #s-done { text-align: center; font-weight: 600; color: var(--ink); }
+    .ideas-foot .btn { text-decoration: none; margin-bottom: 18px; }
+  </style>
+</head>
+<body>
+
+  <header class="hero ideas-hero">
+    <a class="link back" data-home href="index.html">← Back to the sign-up</a>
+    <h1>The idea <span>shelf</span></h1>
+    <p class="lede">Suggestions only. I don't even promise I read the recipe.</p>
+    <a class="link add-link" id="add-jump" href="#add" hidden>＋ Add a recipe</a>
+  </header>
+
+  <main>
+
+    <section class="card">
+      <h3 class="group-head">Appetizers</h3>
+      <ul class="recipes" data-cat="appetizer">
+        <li><a href="https://www.seriouseats.com/great-deviled-eggs-variations-and-hacks" target="_blank" rel="noopener noreferrer">Deviled eggs, many ways</a> <em>Serious Eats</em></li>
+        <li><a href="https://www.cellarpass.com/blog/10-unusual-thanksgiving-dishes-that-will-wow-your-guests-110525" target="_blank" rel="noopener noreferrer">Butternut and sage soup shooters</a> <em>CellarPass</em></li>
+        <li><a href="https://www.cellarpass.com/blog/10-unusual-thanksgiving-dishes-that-will-wow-your-guests-110525" target="_blank" rel="noopener noreferrer">Spiced pear and blue cheese tart</a> <em>CellarPass</em></li>
+      </ul>
+      <h3 class="group-head">Mains &amp; stuffing</h3>
+      <ul class="recipes" data-cat="main">
+        <li><a href="https://seonkyounglongest.com/korean-glazed-turkey/" target="_blank" rel="noopener noreferrer">Korean glazed turkey</a> <em>Korea</em></li>
+        <li><a href="https://www.cellarpass.com/blog/10-unusual-thanksgiving-dishes-that-will-wow-your-guests-110525" target="_blank" rel="noopener noreferrer">Turkey roulade with spinach and feta</a> <em>CellarPass</em></li>
+        <li><a href="https://thegreekfoodie.com/greek-turkey-stuffing/" target="_blank" rel="noopener noreferrer">Greek turkey stuffing with sausage</a> <em>Greece</em></li>
+        <li><a href="https://www.cellarpass.com/blog/10-unusual-thanksgiving-dishes-that-will-wow-your-guests-110525" target="_blank" rel="noopener noreferrer">Cornbread-stuffed acorn squash</a> <em>CellarPass</em></li>
+      </ul>
+      <h3 class="group-head">Vegetables &amp; sides</h3>
+      <ul class="recipes" data-cat="side">
+        <li><a href="https://www.recipetineats.com/hasselback-potatoes/" target="_blank" rel="noopener noreferrer">Hasselback potatoes</a> <em>Sweden</em></li>
+        <li><a href="https://www.cellarpass.com/blog/10-unusual-thanksgiving-dishes-that-will-wow-your-guests-110525" target="_blank" rel="noopener noreferrer">Pumpkin risotto</a> <em>CellarPass</em></li>
+        <li><a href="https://www.cellarpass.com/blog/10-unusual-thanksgiving-dishes-that-will-wow-your-guests-110525" target="_blank" rel="noopener noreferrer">Sweet potato and sage galette</a> <em>CellarPass</em></li>
+        <li><a href="https://www.foodiecrush.com/mediterranean-zucchini-boats/" target="_blank" rel="noopener noreferrer">Mediterranean zucchini boats</a> <em>Mediterranean</em></li>
+        <li><a href="https://jehancancook.com/2019/04/trinidadian-style-corn-pie/" target="_blank" rel="noopener noreferrer">Corn pie</a> <em>Trinidad</em></li>
+        <li><a href="https://www.kudoskitchenbyrenee.com/blistered-green-beans-miso-sesame/" target="_blank" rel="noopener noreferrer">Blistered green beans with miso and sesame</a> <em>Japan</em></li>
+        <li><a href="https://karalydon.com/recipes/crispy-brussels-sprouts-with-thai-sauce/" target="_blank" rel="noopener noreferrer">Crispy Brussels sprouts with Thai sauce</a> <em>Thailand</em></li>
+        <li><a href="https://www.cellarpass.com/blog/10-unusual-thanksgiving-dishes-that-will-wow-your-guests-110525" target="_blank" rel="noopener noreferrer">Brussels sprouts with pomegranate and pistachios</a> <em>CellarPass</em></li>
+        <li><a href="https://www.twospoons.ca/maple-roasted-carrots/" target="_blank" rel="noopener noreferrer">Maple roasted carrots</a> <em>Canada</em></li>
+        <li><a href="https://www.cellarpass.com/blog/10-unusual-thanksgiving-dishes-that-will-wow-your-guests-110525" target="_blank" rel="noopener noreferrer">Maple-bacon roasted carrots</a> <em>CellarPass</em></li>
+        <li><a href="https://thestoriedrecipe.com/shuba-recipe/" target="_blank" rel="noopener noreferrer">Vegan shuba (layered beet salad)</a> <em>Russia</em></li>
+        <li><a href="https://rezelkealoha.com/bistek-sibuyas-recipe-bahay-kubo-cooking-series/" target="_blank" rel="noopener noreferrer">Bistek sibuyas (roasted onions)</a> <em>Philippines</em></li>
+        <li><a href="https://www.cookshideout.com/cranberry-pachadi-cranberry-chutney-recipe" target="_blank" rel="noopener noreferrer">Cranberry pachadi (chutney)</a> <em>India</em></li>
+        <li><a href="https://www.cellarpass.com/blog/10-unusual-thanksgiving-dishes-that-will-wow-your-guests-110525" target="_blank" rel="noopener noreferrer">Cranberry jalapeño relish</a> <em>CellarPass</em></li>
+        <li><a href="https://cooking.nytimes.com/article/best-thanksgiving-side-dishes" target="_blank" rel="noopener noreferrer">Best Thanksgiving side dishes</a> <em>NYT Cooking</em></li>
+      </ul>
+      <h3 class="group-head">Sweets</h3>
+      <ul class="recipes" data-cat="sweet">
+        <li><a href="https://www.sweetandsorrel.com/jamaican-sweet-potato-pudding/" target="_blank" rel="noopener noreferrer">Sweet potato pudding</a> <em>Jamaica</em></li>
+        <li><a href="https://www.isabeleats.com/easy-pumpkin-empanadas/" target="_blank" rel="noopener noreferrer">Pumpkin empanadas</a> <em>Mexico</em></li>
+        <li><a href="https://thestoriedrecipe.com/pecan-date-bars/" target="_blank" rel="noopener noreferrer">Pecan and date shortbread bars</a> <em>Egypt</em></li>
+        <li><a href="https://sundaybaker.co/appeltaart/" target="_blank" rel="noopener noreferrer">Appeltaart (Dutch apple pie)</a> <em>Netherlands</em></li>
+        <li><a href="https://www.cellarpass.com/blog/10-unusual-thanksgiving-dishes-that-will-wow-your-guests-110525" target="_blank" rel="noopener noreferrer">Chocolate sweet potato pie</a> <em>CellarPass</em></li>
+      </ul>
+      <h3 class="group-head">Bread &amp; sips</h3>
+      <ul class="recipes" data-cat="bread">
+        <li><a href="https://www.melskitchencafe.com/french-bread-rolls/" target="_blank" rel="noopener noreferrer">French bread rolls</a> <em>France</em></li>
+        <li><a href="https://thetravelbite.com/recipes/ecuadorian-canelazo-cocktail/" target="_blank" rel="noopener noreferrer">Canelazo (hot spiced rum)</a> <em>Ecuador</em></li>
+      </ul>
+    </section>
+
+    <!-- Shown once the sheet answers; stays hidden without the invite link. -->
+    <section class="card" id="add" hidden>
+      <h2>Add a recipe</h2>
+      <p class="sub">Found something good? Put it on the list for everyone.</p>
+      <form id="suggest" novalidate>
+        <label class="field">
+          <span>What is it?</span>
+          <input type="text" id="s-idea" maxlength="80" autocomplete="off" placeholder="Miso mashed potatoes">
+        </label>
+        <label class="field">
+          <span>Link <em>(optional)</em></span>
+          <input type="text" id="s-link" maxlength="500" inputmode="url" autocomplete="off" autocapitalize="off" spellcheck="false" placeholder="Paste the recipe link">
+        </label>
+        <fieldset class="field">
+          <legend>Where does it go?</legend>
+          <div class="chips tag-chips" id="s-cats">
+            <label class="chip small"><input type="radio" name="s-cat" value="appetizer"><span>Appetizers</span></label>
+            <label class="chip small"><input type="radio" name="s-cat" value="main"><span>Mains &amp; stuffing</span></label>
+            <label class="chip small"><input type="radio" name="s-cat" value="side"><span>Vegetables &amp; sides</span></label>
+            <label class="chip small"><input type="radio" name="s-cat" value="sweet"><span>Sweets</span></label>
+            <label class="chip small"><input type="radio" name="s-cat" value="bread"><span>Bread &amp; sips</span></label>
+          </div>
+        </fieldset>
+        <!-- spam trap: hidden from people, tempting to bots -->
+        <label class="hp" aria-hidden="true">Website <input type="text" id="s-website" tabindex="-1" autocomplete="off"></label>
+        <p class="form-error" role="alert" id="s-error" hidden></p>
+        <button class="btn big" type="submit" id="s-save">Put it on the list</button>
+        <p class="hint" role="status" id="s-done" hidden></p>
+      </form>
+    </section>
+
+  </main>
+
+  <footer class="ideas-foot">
+    <a class="btn big" data-home="signup" href="index.html">＋ Add my dish</a>
+    <p>Made for the family, with questionable judgment and love.</p>
+  </footer>
+
+  <script src="config.js?v=25"></script>
+  <script src="mock.js?v=25"></script>
+  <script src="shelf.js?v=25"></script>
+
+</body>
+</html>

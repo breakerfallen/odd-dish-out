@@ -73,6 +73,20 @@
         if (p.key !== KEY) return resolve({ ok: false, error: 'bad_key' });
         var s = read();
         var d, i;
+        s.ideas = s.ideas || [];
+        if (action === 'loadIdeas' || action === 'addIdea') {
+          if (action === 'addIdea') {
+            d = String(p.idea || '').trim().slice(0, 80);
+            if (!d || ['appetizer', 'main', 'side', 'sweet', 'bread'].indexOf(p.category) < 0) return resolve({ ok: false, error: 'missing_fields' });
+            i = String(p.link || '').trim().slice(0, 500);
+            s.ideas.push({
+              id: 'idea-' + Date.now(), idea: d, category: p.category,
+              link: /^https?:\/\/[^\s<>"']+$/i.test(i) ? i : ''
+            });
+            write(s);
+          }
+          return resolve({ ok: true, ideas: s.ideas });
+        }
         if (action === 'addDish') {
           d = clean(p);
           if (!d.name) return resolve({ ok: false, error: 'missing_fields' });

@@ -18,6 +18,9 @@ var VOTE_HEADERS = ['voterId', 'dishId', 'at', 'kind'];
 var DEFAULT_DEADLINE = 'Sunday, November 22';
 var MAX_DISHES = 150;
 var MAX_VOTES = 5000;
+var IDEA_HEADERS = ['id', 'idea', 'link', 'category', 'createdAt'];
+var IDEA_CATS = ['appetizer', 'main', 'side', 'sweet', 'bread'];
+var MAX_IDEAS = 200;
 var CACHE_SECONDS = 10;
 
 /* ------------------------------------------------------------------ */
@@ -57,6 +60,7 @@ function setup() {
 
   makeTable_(ss, 'Dishes', DISH_HEADERS);
   makeTable_(ss, 'Votes', VOTE_HEADERS);
+  makeTable_(ss, 'Ideas', IDEA_HEADERS);
 
   var blank = ss.getSheetByName('Sheet1');
   if (blank && blank.getLastRow() === 0 && ss.getSheets().length > 1) ss.deleteSheet(blank);
@@ -110,6 +114,19 @@ function handle_(req) {
 
   var voterId = idOk_(req.voterId) ? req.voterId : '';
   if (action === 'load') return state_(snap, voterId);
+  if (action === 'loadIdeas') return ideas_();
+  if (action === 'addIdea') {
+    var ideaLock = LockService.getScriptLock();
+    if (!ideaLock.tryLock(8000)) return { ok: false, error: 'busy' };
+    try {
+      var ideaErr = addIdea_(req);
+      if (ideaErr) return { ok: false, error: ideaErr };
+      SpreadsheetApp.flush();
+      return ideas_();
+    } finally {
+      ideaLock.releaseLock();
+    }
+  }
   if (['addDish', 'updateDish', 'removeDish', 'vote'].indexOf(action) < 0) return { ok: false, error: 'unknown_action' };
 
   var lock = LockService.getScriptLock();
@@ -193,6 +210,40 @@ function write_(action, req, snap, voterId) {
   sh.getRange(existing.row, 2, 1, fields.length).setValues([fields]);
   sh.getRange(existing.row, KITCHEN_COL).setValue(kitchenIn_(req.kitchen));
   return '';
+}
+
+/* ------------------------------------------------------------------ */
+/* Idea shelf: recipes guests add to the list on ideas.html            */
+/* ------------------------------------------------------------------ */
+
+function ideas_() {
+  var out = [];
+  rows_(SpreadsheetApp.getActive().getSheetByName('Ideas'), IDEA_HEADERS.length).forEach(function (r) {
+    var idea = shown_(r[1]);
+    if (!idea) return;
+    var category = String(r[3] || '').trim().toLowerCase();
+    // a row typed in by hand with no category lands with the sides
+    out.push({ id: String(r[0] || ''), idea: idea, link: link_(r[2]), category: IDEA_CATS.indexOf(category) >= 0 ? category : 'side' });
+  });
+  return { ok: true, ideas: out };
+}
+
+function addIdea_(req) {
+  var idea = text_(req.idea, 80);
+  var category = IDEA_CATS.indexOf(req.category) >= 0 ? req.category : '';
+  if (!idea || !category) return 'missing_fields';
+  // made on first use, so a sheet set up before the idea shelf existed needs no second setup run
+  var sh = makeTable_(SpreadsheetApp.getActive(), 'Ideas', IDEA_HEADERS);
+  if (sh.getLastRow() - 1 >= MAX_IDEAS) return 'full';
+  sh.getRange(sh.getLastRow() + 1, 1, 1, IDEA_HEADERS.length)
+    .setValues([[Utilities.getUuid(), idea, link_(req.link), category, new Date().toISOString()]]);
+  return '';
+}
+
+/** Only plain web links are kept; anything else is stored and shown as no link. */
+function link_(value) {
+  var s = String(value == null ? '' : value).trim().slice(0, 500);
+  return /^https?:\/\/[^\s<>"']+$/i.test(s) ? s : '';
 }
 
 /* ------------------------------------------------------------------ */
