@@ -193,9 +193,9 @@ main { display: grid; grid-template-columns: minmax(0, 1fr); gap: 22px; }
 /* ---------- form ---------- */
 .field { display: block; border: 0; padding: 0; margin: 0 0 16px; min-width: 0; }
 .field > span, .field > legend, .field-label { display: block; font-weight: 600; margin-bottom: 6px; padding: 0; }
-.name-chips { display: flex; flex-wrap: wrap; }
+.chips.name-chips { grid-template-columns: 1fr 1fr; }
 .name-chips + input { margin-top: 10px; }
-.name-chip { font: inherit; font-weight: 600; font-size: 1.05rem; color: var(--ink); min-height: 48px; padding: 8px 18px; --c: var(--pickle); }
+.name-chip { justify-content: center; text-align: center; font: inherit; font-weight: 600; font-size: 1.05rem; color: var(--ink); min-height: 48px; padding: 8px 18px; --c: var(--pickle); }
 .name-chip.else { font-weight: 500; border-style: dashed; --c: var(--mustard); }
 .surprise { margin-top: 8px; display: inline-flex; --c: var(--grape); }
 .field > label + .surprise { margin-top: 10px; }
